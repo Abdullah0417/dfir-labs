@@ -1,0 +1,8 @@
+Event
+| where TimeGenerated > ago(1h)
+| where Computer in ("win-ws1","win-ws2")
+| where EventLog == "Security"
+| where EventID in (4624, 4625)
+| summarize count() by Computer, EventID
+| sort by Computer asc, EventID asc
+

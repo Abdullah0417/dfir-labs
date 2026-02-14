@@ -1,37 +1,25 @@
-﻿# Evidence / casework (DO NOT PUBLISH)
-Evidence/
-C:\Evidence/
-**/Evidence/**
-**/Cases/**
-
-# Tools / binaries
-Tools/
-C:\Tools/
-**/Tools/**
-**/*.exe
-**/*.dll
-**/*.zip
-**/*.7z
-
-# Logs, exports, dumps (keep local)
-**/*.evtx
-**/*.etl
-**/*.pcap
-**/*.pcapng
-**/*.csv
-**/*.jsonl
-**/*.log
-
-# Secrets / creds
-**/*.rdp
-**/*.pem
-**/*.pfx
-**/*.p12
-**/*.kdbx
-**/*secret*
-**/*password*
-**/*token*
-
-# OS junk
-Thumbs.db
+﻿# OS / editor
 .DS_Store
+Thumbs.db
+.vscode/
+
+# DFIR evidence (do not publish)
+*.evtx
+*.etl
+*.pcap
+*.pcapng
+*.dmp
+*.raw
+*.mem
+*.dd
+*.E01
+*.zip
+*.7z
+*.rar
+
+# Keys / secrets
+*.pem
+*.pfx
+*.p12
+*.key
+.env

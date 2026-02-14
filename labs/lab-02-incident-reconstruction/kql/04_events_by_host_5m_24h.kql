@@ -1,0 +1,7 @@
+﻿let start = ago(24h);
+Event
+| where TimeGenerated > start
+| where Computer in ("win-ws1","win-ws2")
+| where EventLog in ("Microsoft-Windows-Sysmon/Operational","Security")
+| summarize Events=count() by Computer, bin(TimeGenerated, 5m)
+| sort by TimeGenerated asc

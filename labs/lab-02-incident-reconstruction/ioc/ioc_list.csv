@@ -1,0 +1,6 @@
+indicator_type,indicator,description,source
+process_name,powershell.exe,PowerShell execution observed via Sysmon EID 1,Sysmon (Microsoft-Windows-Sysmon/Operational)
+process_name,pwsh.exe,PowerShell Core execution observed via Sysmon EID 1,Sysmon (Microsoft-Windows-Sysmon/Operational)
+command_line_contains,-EncodedCommand,Encoded PowerShell flag used for obfuscation,Sysmon EID 1 CommandLine
+command_line_contains,-enc,Short form encoded PowerShell flag,Sysmon EID 1 CommandLine
+file_path,C:\ProgramData\lab02_encoded_test.txt,Lab marker file written by encoded PowerShell test command,Lab procedure (README)

@@ -1,0 +1,71 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "workspace": {
+      "type": "String"
+    }
+  },
+  "resources": [
+    {
+      "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/AutomationRules/43467355-8978-4da0-9314-3a88a77f78a8')]",
+      "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/43467355-8978-4da0-9314-3a88a77f78a8')]",
+      "type": "Microsoft.OperationalInsights/workspaces/providers/AutomationRules",
+      "apiVersion": "2024-04-01-preview",
+      "properties": {
+        "displayName": "LAB02 - SOAR-lite - Tag + Escalate + Assign",
+        "order": 1,
+        "triggeringLogic": {
+          "isEnabled": true,
+          "triggersOn": "Incidents",
+          "triggersWhen": "Created",
+          "conditions": [
+            {
+              "conditionType": "Property",
+              "conditionProperties": {
+                "propertyName": "IncidentRelatedAnalyticRuleIds",
+                "operator": "Contains",
+                "propertyValues": [
+                  "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/', '3432b037-80f1-4f08-af9d-8da92e283299')]"
+                ]
+              }
+            }
+          ]
+        },
+        "actions": [
+          {
+            "order": 1,
+            "actionType": "ModifyProperties",
+            "actionConfiguration": {
+              "severity": null,
+              "status": null,
+              "classification": null,
+              "classificationReason": null,
+              "classificationComment": null,
+              "owner": null,
+              "labels": [
+                {
+                  "labelName": "lab02",
+                  "labelType": "User"
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "actionType": "ModifyProperties",
+            "actionConfiguration": {
+              "severity": "High",
+              "status": null,
+              "classification": null,
+              "classificationReason": null,
+              "classificationComment": null,
+              "owner": null,
+              "labels": null
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "# LAB02 Timeline Dashboard\r\n\r\n**Scenario:** Encoded PowerShell execution detected via Sysmon Event ID 1, correlated with Security logon activity.\r\n\r\n**Time window:** Use the workbook time picker (top bar). Recommended: Last 1h or Last 24h for screenshots.\r\n"
+      },
+      "name": "text - 2"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let start = ago(2h);\r\nlet end = now();\r\nEvent\r\n| where TimeGenerated between (start .. end)\r\n| where Computer in (\"win-ws1\",\"win-ws2\")\r\n| where EventLog in (\"Security\", \"Microsoft-Windows-Sysmon/Operational\")\r\n| where (EventLog == \"Security\" and EventID in (4624,4625))\r\n   or (EventLog == \"Microsoft-Windows-Sysmon/Operational\" and EventID in (1,3))\r\n| project TimeGenerated, Computer, EventLog, EventID, EventData, RenderedDescription\r\n| mv-apply d = parse_xml(EventData).DataItem.EventData.Data on (\r\n    project TimeGenerated, Computer, EventLog, EventID, RenderedDescription,\r\n            K=tostring(d['@Name']), V=tostring(d['#text'])\r\n)\r\n| summarize Bag=make_bag(pack(K,V)) by TimeGenerated, Computer, EventLog, EventID, RenderedDescription\r\n| extend\r\n    Account = coalesce(tostring(Bag.SubjectUserName), tostring(Bag.TargetUserName), tostring(Bag.User), tostring(Bag.AccountName)),\r\n    Image = tostring(Bag.Image),\r\n    CommandLine = tostring(Bag.CommandLine)\r\n| project TimeGenerated, Host=Computer, Log=EventLog, EventID, Account, Image, CommandLine, RenderedDescription\r\n| top 250 by TimeGenerated desc\r\n| sort by TimeGenerated asc\r\n",
+        "size": 0,
+        "title": "Timeline query",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "table",
+        "gridSettings": {
+          "sortBy": [
+            {
+              "itemKey": "Host",
+              "sortOrder": 1
+            }
+          ]
+        },
+        "sortBy": [
+          {
+            "itemKey": "Host",
+            "sortOrder": 1
+          }
+        ]
+      },
+      "name": "query - 3"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let start = ago(24h);\r\nEvent\r\n| where TimeGenerated > start\r\n| where Computer in (\"win-ws1\",\"win-ws2\")\r\n| where EventLog in (\"Microsoft-Windows-Sysmon/Operational\",\"Security\")\r\n| summarize Events=count() by Computer, bin(TimeGenerated, 5m)\r\n| sort by TimeGenerated asc\r\n",
+        "size": 0,
+        "title": "Events by host (5m bins, last 24h)",
+        "timeContext": {
+          "durationMs": 86400000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "timechart"
+      },
+      "name": "query - 4"
+    }
+  ],
+  "fromTemplateId": "sentinel-UserWorkbook",
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}

@@ -1,0 +1,21 @@
+let start = ago(2h);
+let end = now();
+Event
+| where TimeGenerated between (start .. end)
+| where Computer in ("win-ws1","win-ws2")
+| where EventLog in ("Security", "Microsoft-Windows-Sysmon/Operational")
+| where (EventLog == "Security" and EventID in (4624,4625))
+   or (EventLog == "Microsoft-Windows-Sysmon/Operational" and EventID in (1,3))
+| project TimeGenerated, Computer, EventLog, EventID, EventData, RenderedDescription
+// Parse XML -> expand <Data Name="X">Y</Data> -> build bag {X:Y}
+| mv-apply d = parse_xml(EventData).DataItem.EventData.Data on (
+    project TimeGenerated, Computer, EventLog, EventID, RenderedDescription,
+            K=tostring(d['@Name']), V=tostring(d['#text'])
+)
+| summarize Bag=make_bag(pack(K,V)) by TimeGenerated, Computer, EventLog, EventID, RenderedDescription
+| extend
+    Account = coalesce(tostring(Bag.SubjectUserName), tostring(Bag.TargetUserName), tostring(Bag.User), tostring(Bag.AccountName)),
+    Image = tostring(Bag.Image),
+    CommandLine = tostring(Bag.CommandLine)
+| project TimeGenerated, Host=Computer, Log=EventLog, EventID, Account, Image, CommandLine, RenderedDescription
+| sort by TimeGenerated asc

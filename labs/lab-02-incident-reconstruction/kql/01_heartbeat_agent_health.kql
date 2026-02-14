@@ -1,0 +1,4 @@
+﻿Heartbeat
+| where Computer in ("win-ws1","win-ws2")
+| sort by TimeGenerated desc
+| take 50

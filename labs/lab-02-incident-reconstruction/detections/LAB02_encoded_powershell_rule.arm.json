@@ -1,0 +1,81 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workspace": {
+            "type": "String"
+        }
+    },
+    "resources": [
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/3432b037-80f1-4f08-af9d-8da92e283299')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/3432b037-80f1-4f08-af9d-8da92e283299')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2023-12-01-preview",
+            "properties": {
+                "displayName": "LAB02 - Encoded PowerShell Execution",
+                "description": "Detects PowerShell execution with -EncodedCommand/-enc based on Sysmon Event ID 1. Encoded PowerShell is commonly used to obfuscate commands and can indicate malicious script execution. This rule creates an incident for triage when observed on monitored hosts.",
+                "severity": "Medium",
+                "enabled": true,
+                "query": "let start = ago(1h);\r\nEvent\r\n| where TimeGenerated > start\r\n| where EventLog == \"Microsoft-Windows-Sysmon/Operational\"\r\n| where EventID == 1\r\n| project TimeGenerated, Computer, EventData, RenderedDescription\r\n| mv-apply d = parse_xml(EventData).DataItem.EventData.Data on (\r\n    project TimeGenerated, Computer, RenderedDescription,\r\n            K=tostring(d['@Name']), V=tostring(d['#text'])\r\n)\r\n| summarize Bag=make_bag(pack(K,V)) by TimeGenerated, Computer, RenderedDescription\r\n| extend\r\n    User = tostring(Bag.User),\r\n    Image = tostring(Bag.Image),\r\n    CommandLine = tostring(Bag.CommandLine)\r\n| where tolower(Image) endswith @\"\\powershell.exe\" or tolower(Image) endswith @\"\\pwsh.exe\"\r\n| where CommandLine has_any (\"-EncodedCommand\",\" -enc \")\r\n| project TimeGenerated, Computer, User, Image, CommandLine, RenderedDescription\r\n| sort by TimeGenerated desc\r\n",
+                "queryFrequency": "PT5M",
+                "queryPeriod": "PT1H",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "Execution"
+                ],
+                "techniques": [
+                    "T1059"
+                ],
+                "subTechniques": [
+                    "T1059.001"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": false,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "AlertPerResult"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": [
+                    {
+                        "entityType": "Host",
+                        "fieldMappings": [
+                            {
+                                "identifier": "HostName",
+                                "columnName": "Computer"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Account",
+                        "fieldMappings": [
+                            {
+                                "identifier": "Name",
+                                "columnName": "User"
+                            }
+                        ]
+                    }
+                ],
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        }
+    ]
+}

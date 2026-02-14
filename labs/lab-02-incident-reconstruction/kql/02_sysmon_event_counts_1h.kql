@@ -1,0 +1,6 @@
+Event
+| where TimeGenerated > ago(1h)
+| where Computer in ("win-ws1","win-ws2")
+| where EventLog == "Microsoft-Windows-Sysmon/Operational"
+| summarize count() by Computer, EventID
+| sort by Computer asc, EventID asc
