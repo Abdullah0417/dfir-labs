@@ -6,6 +6,7 @@ Hands-on DFIR labs focused on enterprise telemetry, hunting, and incident recons
 | Lab | Focus | Outputs |
 |---|---|---|
 | [Lab 01 — Telemetry + SIEM Validation (Sentinel)](labs/lab-01-telemetry-siem-validation/) | Confirm ingestion + baseline telemetry | KQL queries + screenshots + config proof |
+| [Lab 02 — Incident Reconstruction (Sentinel)](labs/lab-02-incident-reconstruction/README.md) | Multi-host timeline + detection + automation | KQL + incident proof + analytic rule + automation rule + workbook |
 
 ## Tooling / Stack
 - Microsoft Sentinel + Log Analytics Workspace
