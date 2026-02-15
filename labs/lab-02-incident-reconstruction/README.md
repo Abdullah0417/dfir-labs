@@ -40,6 +40,68 @@ Queries parse it using `parse_xml()` and build a bag to extract fields like `Ima
 
 ---
 
+## Import / Deploy (Portal)
+
+This lab ships deployable exports:
+- Analytic rule (ARM): `detections/LAB02_encoded_powershell_rule.arm.json`
+- Automation rule (ARM): `automation/AB02_soar_lite_automation_rule.arm.json`
+- Workbook template: `workbooks/LAB02_timeline_dashboard.galleryTemplate.json`
+
+> Prereqs: Microsoft Sentinel enabled on the workspace, and you have **Contributor** (or higher) on the resource group + workspace.
+
+### A) Import the Analytic Rule (ARM)
+
+1. Azure Portal → **Microsoft Sentinel**
+2. Select your workspace (example: `law-dfir`)
+3. Left menu → **Analytics**
+4. Confirm the rule is not already present (search: `LAB02 - Encoded PowerShell Execution`)
+5. Open a new tab: Azure Portal → **Deploy a custom template**  
+   - Search in portal: “Deploy a custom template”
+6. Click **Build your own template in the editor**
+7. Click **Load file** → upload:  
+   - `detections/LAB02_encoded_powershell_rule.arm.json`
+8. Click **Save**
+9. Choose:
+   - **Subscription**: your lab subscription
+   - **Resource group**: `rg-dfir-lab-scus`
+10. Click **Review + create** → **Create**
+11. Back in Sentinel → **Analytics** → verify the rule exists and is **Enabled**.
+
+### B) Import the Automation Rule (ARM)
+
+1. Azure Portal → **Deploy a custom template**
+2. **Build your own template in the editor**
+3. **Load file** → upload:
+   - `automation/AB02_soar_lite_automation_rule.arm.json`
+4. **Save**
+5. Select the same **Subscription** + **Resource group**
+6. **Review + create** → **Create**
+7. Sentinel → **Automation**
+8. Verify the rule exists and is **Enabled**.
+
+> Publish-safe note: this export does not assign an owner to avoid leaking user identifiers.
+
+### C) Import the Workbook Template
+
+1. Azure Portal → **Microsoft Sentinel**
+2. Select workspace
+3. Left menu → **Workbooks**
+4. Click **+ Add workbook**
+5. Click **Edit**
+6. Click the **</> (Advanced editor)** button
+7. Replace the JSON with the contents of:
+   - `workbooks/LAB02_timeline_dashboard.galleryTemplate.json`
+8. Click **Apply**
+9. Click **Save** (give it a name like: `LAB02 - Timeline Dashboard`)
+
+### D) Quick validation after import
+
+- Sentinel → **Analytics**: rule `LAB02 - Encoded PowerShell Execution` is present + enabled
+- Sentinel → **Automation**: automation rule is present + enabled
+- Sentinel → **Workbooks**: `LAB02 - Timeline Dashboard` opens and renders
+
+---
+
 ## Evidence (screenshots)
 
 - Workbook dashboard: [`screenshots/workbook_timeline_dashboard.png`](screenshots/workbook_timeline_dashboard.png)
