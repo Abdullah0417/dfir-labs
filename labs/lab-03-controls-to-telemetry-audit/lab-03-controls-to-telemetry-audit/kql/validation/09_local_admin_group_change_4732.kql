@@ -1,0 +1,9 @@
+﻿// PASS: 4732 seen after adding lab03_user to Administrators
+let lookback = 24h;
+Event
+| where TimeGenerated > ago(lookback)
+| where EventLog == "Security"
+| where EventID == 4732
+| where Computer in~ ("win-ws1","win-ws2")
+| project TimeGenerated, Computer, RenderedDescription
+| sort by TimeGenerated desc

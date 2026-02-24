@@ -1,0 +1,31 @@
+﻿let lookback = 24h;
+let hosts = dynamic(["win-ws1","win-ws2"]);
+let signals = datatable(Signal:string, EventLog:string, EventID:int, Priority:string)
+[
+  "Successful authentication","Security",4624,"Medium",
+  "Failed authentication","Security",4625,"Medium",
+  "Privileged session","Security",4672,"High",
+  "Account created","Security",4720,"High",
+  "Local admin group change","Security",4732,"High",
+  "Scheduled task created","Security",4698,"High",
+  "Audit policy changed (tampering)","Security",4719,"Critical",
+  "Security log cleared (tampering)","Security",1102,"Critical",
+  "Process execution visibility","Microsoft-Windows-Sysmon/Operational",1,"High",
+  "Network connection visibility","Microsoft-Windows-Sysmon/Operational",3,"High"
+];
+let expected =
+signals
+| extend Computer = hosts
+| mv-expand Computer to typeof(string);
+let seen =
+Event
+| where TimeGenerated > ago(lookback)
+| where Computer in~ (hosts)
+| summarize LastSeen=max(TimeGenerated) by Computer, EventLog, EventID;
+expected
+| join kind=leftouter seen on Computer, EventLog, EventID
+| extend Status = iff(isnotempty(LastSeen), "PASS", "MISSING")
+| where Status == "MISSING"
+| extend PriorityRank = case(Priority=="Critical", 1, Priority=="High", 2, Priority=="Medium", 3, 4)
+| project Priority, Computer, Signal
+| sort by PriorityRank asc, Computer asc, Signal asc

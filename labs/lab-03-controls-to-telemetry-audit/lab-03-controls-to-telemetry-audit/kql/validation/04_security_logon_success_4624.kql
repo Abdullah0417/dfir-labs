@@ -1,0 +1,8 @@
+﻿// PASS: 4624 events seen (successful logon telemetry)
+let lookback = 24h;
+Event
+| where TimeGenerated > ago(lookback)
+| where EventLog == "Security"
+| where EventID == 4624
+| where Computer in~ ("win-ws1","win-ws2")
+| summarize Count=count(), LastSeen=max(TimeGenerated) by Computer

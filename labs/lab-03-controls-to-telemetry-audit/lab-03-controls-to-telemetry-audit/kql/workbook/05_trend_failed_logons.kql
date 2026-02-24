@@ -1,0 +1,6 @@
+﻿let start = ago(24h);
+let end = now();
+Event
+| where TimeGenerated between (start .. end)
+| where EventLog == "Security" and EventID == 4625
+| make-series Failures=count() default=0 on TimeGenerated from start to end step 1h by Computer

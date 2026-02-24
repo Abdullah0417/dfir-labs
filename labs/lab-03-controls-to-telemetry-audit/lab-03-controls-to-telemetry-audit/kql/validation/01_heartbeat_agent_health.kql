@@ -1,0 +1,7 @@
+﻿// PASS: Recent Heartbeat for each endpoint
+let lookback = 24h;
+Heartbeat
+| where TimeGenerated > ago(lookback)
+| where Computer in~ ("win-ws1","win-ws2")
+| summarize LastHeartbeat=max(TimeGenerated), Count=count() by Computer
+| sort by Computer asc

@@ -1,0 +1,21 @@
+# Telemetry Coverage Matrix (NIST CSF 2.0 framing)
+
+Legend:
+- Observable: PASS in KQL (events present and attributable)
+- Partial: events exist but missing key fields / inconsistent across hosts
+- Not observable: no events (gap)
+
+| CSF 2.0 Function | Control / Outcome (plain English) | Telemetry signal(s) | Sentinel table | KQL validation | Observable (Y/P/N) | Evidence screenshot | Gap / risk | Recommended remediation |
+|---|---|---|---|---|---|---|---|---|
+| GV (Govern) | Central logging exists + monitored | Heartbeat + baseline Event ingestion | Heartbeat/Event | 00,01 | Y | 02_validation_heartbeat.png | If missing, no program visibility | Fix AMA/DCR association, alert on missing Heartbeat |
+| ID (Identify) | Endpoint coverage (assets are seen) | Hosts appear in last 24h | Heartbeat/Event | 00 | Y | 02_validation_heartbeat.png | Blind spots | Onboard missing endpoints |
+| DE (Detect) | Process execution visibility | Sysmon EID 1 (or Security 4688 if enabled) | Event | 02 | Y | 03_validation_sysmon_eid1.png | Harder to detect LOLBins | Ensure Sysmon config is deployed; optionally enable 4688 |
+| DE (Detect) | Network connection visibility | Sysmon EID 3 | Event | 03 | Y | 04_validation_sysmon_eid3.png | Lateral movement harder to prove | Ensure Sysmon network events enabled |
+| DE (Detect) | Successful authentication visibility | Security 4624 | Event | 04 | Y | 05_validation_4624.png | Cannot prove access | Ensure Security log collection + audit policy |
+| DE (Detect) | Failed authentication visibility | Security 4625 | Event | 05 | Y | 06_validation_4625.png | Harder brute-force detection | Alert on spikes / geo anomalies (future) |
+| DE (Detect) | Privileged session visibility | Security 4672 | Event | 06 | Y | 16_workbook_overview.png | Admin misuse harder to detect | Monitor non-service privileged logons |
+| PR/DE | Account lifecycle auditing | Security 4720 / 4725 | Event | 07/08 | P | N/A | Account creation observable; 4725 (disable) is optional and was not captured in screenshots. | Alert on account creation + disable events |
+| PR/DE | Local admin membership changes | Security 4732 | Event | 09 | Y | 07_validation_4732.png | Priv-esc expansion | High priority alert on Administrators group adds |
+| DE (Detect) | Scheduled task persistence visibility | Security 4698 | Event | 10 | Y | 08_validation_4698.png | Persistence harder to prove | Alert on tasks executing from user-writable paths |
+| DE (Detect) | Audit policy tampering visibility | Security 4719 | Event | 11 | Y | 09_validation_4719.png | Adversary can blind logging | Ship analytic rule + alerting |
+| DE (Detect) | Log clearing visibility (anti-forensics) | Security 1102 | Event | 12 | N/A | N/A | Optional lab-only test (destructive). Not executed. | Ship analytic rule + incident response playbook |

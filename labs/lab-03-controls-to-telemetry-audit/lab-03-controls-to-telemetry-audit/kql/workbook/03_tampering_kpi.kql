@@ -1,0 +1,16 @@
+﻿let lookback = 7d;
+let x =
+Event
+| where TimeGenerated > ago(lookback)
+| where EventLog == "Security"
+| where EventID in (4719,1102)
+| summarize Alerts=count(), AffectedHosts=dcount(Computer), LastSeen=max(TimeGenerated);
+x
+| extend Alerts = coalesce(Alerts, 0)
+| extend Status = iff(Alerts > 0, "DETECTED", "None detected")
+| extend Bottom = iff(
+    Alerts > 0,
+    strcat("Hosts: ", AffectedHosts, " • Last: ", format_datetime(LastSeen, "yyyy-MM-dd HH:mm")),
+    "No tampering events observed in last 7d"
+)
+| project Title="Logging tampering alerts (High Risk)", Alerts, Status, Bottom

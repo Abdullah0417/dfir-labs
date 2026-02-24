@@ -1,0 +1,8 @@
+﻿// PASS: both endpoints appear in the last 24h
+let lookback = 24h;
+union isfuzzy=true
+Heartbeat,
+(Event | where TimeGenerated > ago(lookback) | project TimeGenerated, Computer)
+| where TimeGenerated > ago(lookback)
+| summarize LastSeen=max(TimeGenerated) by Computer
+| sort by LastSeen desc

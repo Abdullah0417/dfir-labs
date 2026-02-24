@@ -1,0 +1,79 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workspace": {
+            "type": "String"
+        }
+    },
+    "resources": [
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/AutomationRules/00000000-0000-0000-0000-000000000000')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/00000000-0000-0000-0000-000000000000')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/AutomationRules",
+            "apiVersion": "2024-04-01-preview",
+            "properties": {
+                "displayName": "LAB03 - SOAR-lite (Tag + Severity)",
+                "order": 2,
+                "triggeringLogic": {
+                    "isEnabled": true,
+                    "triggersOn": "Incidents",
+                    "triggersWhen": "Created",
+                    "conditions": [
+                        {
+                            "conditionType": "Property",
+                            "conditionProperties": {
+                                "propertyName": "IncidentRelatedAnalyticRuleIds",
+                                "operator": "Contains",
+                                "propertyValues": [
+                                    "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/', '00000000-0000-0000-0000-000000000000')]"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "actions": [
+                    {
+                        "order": 1,
+                        "actionType": "ModifyProperties",
+                        "actionConfiguration": {
+                            "severity": null,
+                            "status": null,
+                            "classification": null,
+                            "classificationReason": null,
+                            "classificationComment": null,
+                            "owner": null,
+                            "labels": [
+                                {
+                                    "labelName": "lab03",
+                                    "labelType": "User"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "order": 2,
+                        "actionType": "ModifyProperties",
+                        "actionConfiguration": {
+                            "severity": "High",
+                            "status": null,
+                            "classification": null,
+                            "classificationReason": null,
+                            "classificationComment": null,
+                            "owner": null,
+                            "labels": null
+                        }
+                    },
+                    {
+                        "order": 3,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                            "title": "Lab03 validation required",
+                            "description": "<div>Lab03 standardization: audit/log tampering requires validation and escalation</div>"
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}

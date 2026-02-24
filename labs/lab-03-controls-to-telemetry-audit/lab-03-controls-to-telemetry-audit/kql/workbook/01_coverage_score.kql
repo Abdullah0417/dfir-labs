@@ -1,0 +1,32 @@
+﻿let lookback = 24h;
+let hosts = dynamic(["win-ws1","win-ws2"]);
+let hostCount = array_length(hosts);
+let signals = datatable(Signal:string, EventLog:string, EventID:int)
+[
+  "Successful authentication","Security",4624,
+  "Failed authentication","Security",4625,
+  "Privileged session","Security",4672,
+  "Account created","Security",4720,
+  "Local admin group change","Security",4732,
+  "Scheduled task created","Security",4698,
+  "Audit policy changed (tampering)","Security",4719,
+  "Security log cleared (tampering)","Security",1102,
+  "Process execution visibility","Microsoft-Windows-Sysmon/Operational",1,
+  "Network connection visibility","Microsoft-Windows-Sysmon/Operational",3
+];
+let seenPerHost =
+Event
+| where TimeGenerated > ago(lookback)
+| where Computer in~ (hosts)
+| summarize LastSeen=max(TimeGenerated) by Computer, EventLog, EventID;
+signals
+| join kind=leftouter (
+    seenPerHost
+    | summarize HostsSeen=dcount(Computer), LastSeen=max(LastSeen) by EventLog, EventID
+) on EventLog, EventID
+| extend HostsSeen = coalesce(HostsSeen, 0)
+| extend Status = iff(HostsSeen == hostCount, "PASS", "MISSING")
+| summarize Pass=countif(Status=="PASS"), Total=count(), Last=max(LastSeen)
+| extend CoveragePct=round(100.0 * todouble(Pass) / todouble(Total), 1)
+| extend Bottom=strcat(Pass, "/", Total, " required signals passing • Last seen: ", format_datetime(Last, "yyyy-MM-dd HH:mm"))
+| project Title="Coverage score (last 24h)", CoveragePct, Bottom

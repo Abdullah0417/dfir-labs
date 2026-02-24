@@ -1,0 +1,8 @@
+﻿// PASS: Sysmon EID 3 present recently (network visibility)
+let lookback = 24h;
+Event
+| where TimeGenerated > ago(lookback)
+| where EventLog == "Microsoft-Windows-Sysmon/Operational"
+| where EventID == 3
+| where Computer in~ ("win-ws1","win-ws2")
+| summarize Count=count(), LastSeen=max(TimeGenerated) by Computer

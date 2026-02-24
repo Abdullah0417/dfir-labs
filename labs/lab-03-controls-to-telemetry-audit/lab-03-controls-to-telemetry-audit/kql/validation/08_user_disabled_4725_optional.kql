@@ -1,0 +1,9 @@
+﻿// OPTIONAL: PASS if you disabled a user at least once (4725)
+let lookback = 7d;
+Event
+| where TimeGenerated > ago(lookback)
+| where EventLog == "Security"
+| where EventID == 4725
+| where Computer in~ ("win-ws1","win-ws2")
+| project TimeGenerated, Computer, RenderedDescription
+| sort by TimeGenerated desc

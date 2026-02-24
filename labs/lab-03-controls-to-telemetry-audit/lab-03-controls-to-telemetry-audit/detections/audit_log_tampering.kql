@@ -1,0 +1,14 @@
+let lookback = 15m;
+Event
+| where TimeGenerated > ago(lookback)
+| where EventLog == "Security"
+| where EventID in (4719, 1102)
+| extend ev = parse_xml(EventData)
+| mv-expand d = ev.EventData.Data
+| extend k = tostring(d["@Name"]), v = tostring(d["#text"])
+| summarize bag = make_bag(pack(k, v)) by TimeGenerated, Computer, EventID, RenderedDescription
+| extend SubjectUserName = tostring(bag.SubjectUserName)
+| extend SubjectDomainName = tostring(bag.SubjectDomainName)
+| extend Actor = iff(isempty(SubjectUserName), "", strcat(SubjectDomainName, "\\", SubjectUserName))
+| project TimeGenerated, Computer, EventID, Actor, RenderedDescription
+| sort by TimeGenerated desc

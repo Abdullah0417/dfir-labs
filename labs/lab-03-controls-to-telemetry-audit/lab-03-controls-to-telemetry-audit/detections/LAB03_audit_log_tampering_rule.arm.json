@@ -1,0 +1,83 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "workspace": {
+      "type": "String"
+    }
+  },
+  "resources": [
+    {
+      "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/00000000-0000-0000-0000-000000000000')]",
+      "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/00000000-0000-0000-0000-000000000000')]",
+      "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+      "kind": "Scheduled",
+      "apiVersion": "2023-12-01-preview",
+      "properties": {
+        "displayName": "LAB03 - Audit/Log Tampering (4719/1102)",
+        "description": "Detects audit policy changes (4719) and Security log cleared (1102). See telemetry coverage matrix (Lab 03).",
+        "severity": "High",
+        "enabled": true,
+        "query": "let lookback = 15m;\r\nEvent\r\n| where TimeGenerated > ago(lookback)\r\n| where EventLog == \"Security\"\r\n| where EventID in (4719, 1102)\r\n| extend ev = parse_xml(EventData)\r\n| mv-expand d = ev.EventData.Data\r\n| extend k = tostring(d[\"@Name\"]), v = tostring(d[\"#text\"])\r\n| summarize bag = make_bag(pack(k, v)) by TimeGenerated, Computer, EventID, RenderedDescription\r\n| extend SubjectUserName = tostring(bag.SubjectUserName)\r\n| extend SubjectDomainName = tostring(bag.SubjectDomainName)\r\n| extend Actor = iff(isempty(SubjectUserName), \"\", strcat(SubjectDomainName, \"\\\\\", SubjectUserName))\r\n| project TimeGenerated, Computer, EventID, Actor, RenderedDescription\r\n| sort by TimeGenerated desc\r\n",
+        "queryFrequency": "PT5M",
+        "queryPeriod": "PT15M",
+        "triggerOperator": "GreaterThan",
+        "triggerThreshold": 0,
+        "suppressionDuration": "PT5H",
+        "suppressionEnabled": false,
+        "startTimeUtc": null,
+        "tactics": [
+          "DefenseEvasion"
+        ],
+        "techniques": [
+          "T1562",
+          "T1070"
+        ],
+        "subTechniques": [
+          "T1562.002",
+          "T1070.001"
+        ],
+        "alertRuleTemplateName": null,
+        "incidentConfiguration": {
+          "createIncident": true,
+          "groupingConfiguration": {
+            "enabled": false,
+            "reopenClosedIncident": false,
+            "lookbackDuration": "PT5H",
+            "matchingMethod": "AllEntities",
+            "groupByEntities": [],
+            "groupByAlertDetails": [],
+            "groupByCustomDetails": []
+          }
+        },
+        "eventGroupingSettings": {
+          "aggregationKind": "SingleAlert"
+        },
+        "alertDetailsOverride": null,
+        "customDetails": {},
+        "entityMappings": [
+          {
+            "entityType": "Host",
+            "fieldMappings": [
+              {
+                "identifier": "HostName",
+                "columnName": "Computer"
+              }
+            ]
+          },
+          {
+            "entityType": "Account",
+            "fieldMappings": [
+              {
+                "identifier": "FullName",
+                "columnName": "Actor"
+              }
+            ]
+          }
+        ],
+        "sentinelEntitiesMappings": null,
+        "templateVersion": null
+      }
+    }
+  ]
+}

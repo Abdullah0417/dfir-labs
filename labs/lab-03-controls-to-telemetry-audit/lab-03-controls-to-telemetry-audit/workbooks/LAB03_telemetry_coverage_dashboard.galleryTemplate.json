@@ -1,0 +1,234 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "Executive snapshot (24h coverage + 7d tampering + endpoint reporting)"
+      },
+      "customWidth": "500",
+      "name": "text - 15",
+      "styleSettings": {
+        "maxWidth": "500"
+      },
+      "id": "cb1bdfa0-32b5-438c-b292-7d0c361e7748"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let lookback = 24h;\r\nlet hosts = dynamic([\"win-ws1\",\"win-ws2\"]);\r\nlet hostCount = array_length(hosts);\r\nlet signals = datatable(Signal:string, EventLog:string, EventID:int)\r\n[\r\n  \"Successful authentication\",\"Security\",4624,\r\n  \"Failed authentication\",\"Security\",4625,\r\n  \"Privileged session\",\"Security\",4672,\r\n  \"Account created\",\"Security\",4720,\r\n  \"Local admin group change\",\"Security\",4732,\r\n  \"Scheduled task created\",\"Security\",4698,\r\n  \"Audit policy changed (tampering)\",\"Security\",4719,\r\n  \"Security log cleared (tampering)\",\"Security\",1102,\r\n  \"Process execution visibility\",\"Microsoft-Windows-Sysmon/Operational\",1,\r\n  \"Network connection visibility\",\"Microsoft-Windows-Sysmon/Operational\",3\r\n];\r\nlet seenPerHost =\r\nEvent\r\n| where TimeGenerated > ago(lookback)\r\n| where Computer in~ (hosts)\r\n| summarize LastSeen=max(TimeGenerated) by Computer, EventLog, EventID;\r\nsignals\r\n| join kind=leftouter (\r\n    seenPerHost\r\n    | summarize HostsSeen=dcount(Computer), LastSeen=max(LastSeen) by EventLog, EventID\r\n) on EventLog, EventID\r\n| extend HostsSeen = coalesce(HostsSeen, 0)\r\n| extend Status = iff(HostsSeen == hostCount, \"PASS\", \"MISSING\")\r\n| summarize Pass=countif(Status==\"PASS\"), Total=count(), Last=max(LastSeen)\r\n| extend CoveragePct=round(100.0 * todouble(Pass) / todouble(Total), 1)\r\n| extend Bottom=strcat(Pass, \"/\", Total, \" required signals passing • Last seen: \", format_datetime(Last, \"yyyy-MM-dd HH:mm\"))\r\n",
+        "size": 3,
+        "title": "Audit Coverage Snapshot (last 24h)",
+        "timeContext": {
+          "durationMs": 86400000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "tiles",
+        "gridSettings": {
+          "sortBy": [
+            {
+              "itemKey": "EventID",
+              "sortOrder": 2
+            }
+          ]
+        },
+        "sortBy": [
+          {
+            "itemKey": "EventID",
+            "sortOrder": 2
+          }
+        ],
+        "tileSettings": {
+          "titleContent": {
+            "columnMatch": "Title",
+            "formatter": 1
+          },
+          "subtitleContent": {},
+          "leftContent": {
+            "columnMatch": "CoveragePct",
+            "formatter": 12,
+            "numberFormat": {
+              "options": {
+                "style": "decimal",
+                "useGrouping": false
+              },
+              "unit": 1
+            }
+          },
+          "secondaryContent": {
+            "columnMatch": "Bottom"
+          },
+          "size": "auto"
+        },
+        "crossComponentResources": [
+          "/subscriptions/<SUBSCRIPTION_ID>/resourcegroups/<RESOURCE_GROUP>/providers/microsoft.operationalinsights/workspaces/<WORKSPACE_NAME>"
+        ]
+      },
+      "name": "Tile A — Coverage snapshot (Security event IDs)",
+      "id": "7a13ef57-5218-4bb9-ad13-cfb7f7e68109"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let lookback = 2h;\r\nlet staleAfter = 1h;\r\nlet hosts = dynamic([\"win-ws1\",\"win-ws2\"]);\r\n\r\nlet perHost =\r\nHeartbeat\r\n| where TimeGenerated > ago(lookback)\r\n| where Computer in~ (hosts)\r\n| summarize LastHeartbeat=max(TimeGenerated) by Computer;\r\n\r\nrange i from 0 to array_length(hosts)-1 step 1\r\n| extend Computer = tostring(hosts[i])\r\n| join kind=leftouter perHost on Computer\r\n| extend Health = case(\r\n    isnull(LastHeartbeat), \"MISSING\",\r\n    LastHeartbeat > ago(staleAfter), \"HEALTHY\",\r\n    \"STALE\"\r\n)\r\n| summarize Healthy=countif(Health==\"HEALTHY\"),\r\n          Total=count(),\r\n          Stale=countif(Health==\"STALE\"),\r\n          Missing=countif(Health==\"MISSING\"),\r\n          LatestHB=max(LastHeartbeat)\r\n| extend Left = strcat(Healthy, \"/\", Total)\r\n| extend Subtitle = \"endpoints healthy\"\r\n| extend Bottom = strcat(\"Stale: \", Stale, \" • Missing: \", Missing, \" • Latest HB: \",\r\n                         iff(isnull(LatestHB), \"N/A\", format_datetime(LatestHB, \"yyyy-MM-dd HH:mm\")),\r\n                         \" • Threshold: \", tostring(staleAfter))\r\n",
+        "size": 3,
+        "title": "Endpoint Reporting",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "tiles",
+        "gridSettings": {
+          "sortBy": [
+            {
+              "itemKey": "Title",
+              "sortOrder": 1
+            }
+          ]
+        },
+        "sortBy": [
+          {
+            "itemKey": "Title",
+            "sortOrder": 1
+          }
+        ],
+        "tileSettings": {
+          "leftContent": {
+            "columnMatch": "Left",
+            "formatter": 12
+          },
+          "secondaryContent": {
+            "columnMatch": "Bottom",
+            "formatter": 1
+          },
+          "titleContent": {
+            "columnMatch": "Title",
+            "formatter": 1
+          },
+          "subtitleContent": {
+            "columnMatch": "Subtitle",
+            "formatter": 1
+          },
+          "size": "full"
+        },
+        "crossComponentResources": [
+          "/subscriptions/<SUBSCRIPTION_ID>/resourcegroups/<RESOURCE_GROUP>/providers/microsoft.operationalinsights/workspaces/<WORKSPACE_NAME>"
+        ]
+      },
+      "name": "Sysmon coverage (EID 1 + 3)",
+      "id": "a7acb973-0866-4d28-bf8e-6380e3549796"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let lookback = 7d;\r\nlet x =\r\nEvent\r\n| where TimeGenerated > ago(lookback)\r\n| where EventLog == \"Security\"\r\n| where EventID in (4719,1102)\r\n| summarize Alerts=count(), AffectedHosts=dcount(Computer), LastSeen=max(TimeGenerated);\r\nx\r\n| extend Alerts = coalesce(Alerts, 0)\r\n| extend Status = iff(Alerts > 0, \"DETECTED\", \"None detected\")\r\n| extend Bottom = iff(\r\n    Alerts > 0,\r\n    strcat(\"Hosts: \", AffectedHosts, \" • Last: \", format_datetime(LastSeen, \"yyyy-MM-dd HH:mm\")),\r\n    \"No tampering events observed in last 7d\"\r\n)\r\n| project Title=\"Logging Tampering Alerts (High Risk)\", Status, Alerts, Bottom",
+        "size": 3,
+        "title": "Logging Tampering Alerts (High Risk)",
+        "timeContext": {
+          "durationMs": 86400000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "tiles",
+        "gridSettings": {
+          "sortBy": [
+            {
+              "itemKey": "Title",
+              "sortOrder": 1
+            }
+          ]
+        },
+        "sortBy": [
+          {
+            "itemKey": "Title",
+            "sortOrder": 1
+          }
+        ],
+        "tileSettings": {
+          "titleContent": {
+            "columnMatch": "Title",
+            "formatter": 1
+          },
+          "leftContent": {
+            "columnMatch": "Alerts",
+            "formatter": 12
+          },
+          "secondaryContent": {
+            "columnMatch": "Bottom",
+            "formatter": 1
+          }
+        },
+        "crossComponentResources": [
+          "/subscriptions/<SUBSCRIPTION_ID>/resourcegroups/<RESOURCE_GROUP>/providers/microsoft.operationalinsights/workspaces/<WORKSPACE_NAME>"
+        ]
+      },
+      "name": "query - 3",
+      "id": "3273bad8-3d2e-4a39-9556-a309d79b40c6"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let lookback = 24h;\r\nlet hosts = dynamic([\"win-ws1\",\"win-ws2\"]);\r\nlet signals = datatable(Signal:string, EventLog:string, EventID:int, Priority:string)\r\n[\r\n  \"Successful authentication\",\"Security\",4624,\"Medium\",\r\n  \"Failed authentication\",\"Security\",4625,\"Medium\",\r\n  \"Privileged session\",\"Security\",4672,\"High\",\r\n  \"Account created\",\"Security\",4720,\"High\",\r\n  \"Local admin group change\",\"Security\",4732,\"High\",\r\n  \"Scheduled task created\",\"Security\",4698,\"High\",\r\n  \"Audit policy changed (tampering)\",\"Security\",4719,\"Critical\",\r\n  \"Security log cleared (tampering)\",\"Security\",1102,\"Critical\",\r\n  \"Process execution visibility\",\"Microsoft-Windows-Sysmon/Operational\",1,\"High\",\r\n  \"Network connection visibility\",\"Microsoft-Windows-Sysmon/Operational\",3,\"High\"\r\n];\r\nsignals\r\n| join kind=leftouter (\r\n    Event\r\n    | where TimeGenerated > ago(lookback)\r\n    | where Computer in~ (hosts)\r\n    | summarize LastSeen=max(TimeGenerated) by Computer, EventLog, EventID\r\n) on EventLog, EventID\r\n| extend Status = iff(isnotempty(LastSeen), \"PASS\", \"MISSING\")\r\n| where Status == \"MISSING\"\r\n| project Priority, Computer, Signal\r\n| sort by Priority asc, Computer asc",
+        "size": 3,
+        "title": "Top gaps lists \"missing telemetry per host\"",
+        "timeContext": {
+          "durationMs": 86400000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "table",
+        "crossComponentResources": [
+          "/subscriptions/<SUBSCRIPTION_ID>/resourcegroups/<RESOURCE_GROUP>/providers/microsoft.operationalinsights/workspaces/<WORKSPACE_NAME>"
+        ]
+      },
+      "name": "Tile D — Agent health (Heartbeat)",
+      "id": "491bfe4e-521c-4bcd-880b-286138ed80d6"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let start = ago(24h);\r\nlet end = now();\r\nEvent\r\n| where TimeGenerated between (start .. end)\r\n| where EventLog == \"Security\" and EventID == 4625\r\n| make-series Failures=count() default=0 on TimeGenerated from start to end step 1h by Computer",
+        "size": 3,
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "timechart",
+        "crossComponentResources": [
+          "/subscriptions/<SUBSCRIPTION_ID>/resourcegroups/<RESOURCE_GROUP>/providers/microsoft.operationalinsights/workspaces/<WORKSPACE_NAME>"
+        ]
+      },
+      "name": "query - 5",
+      "id": "402bca52-c1b0-4f98-a7a0-b7975562e535"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let lookback = 24h;\r\nEvent\r\n| where TimeGenerated > ago(lookback)\r\n| where EventLog == \"Microsoft-Windows-Sysmon/Operational\"\r\n| where EventID in (1,3)\r\n| summarize Events=count() by bin(TimeGenerated, 1h), Computer\r\n| sort by TimeGenerated asc",
+        "size": 3,
+        "timeContext": {
+          "durationMs": 86400000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "timechart",
+        "crossComponentResources": [
+          "/subscriptions/<SUBSCRIPTION_ID>/resourcegroups/<RESOURCE_GROUP>/providers/microsoft.operationalinsights/workspaces/<WORKSPACE_NAME>"
+        ]
+      },
+      "name": "query - 6",
+      "id": "139ac022-0bf0-4a98-9995-043bcb34397d"
+    }
+  ],
+  "isLocked": true,
+  "fallbackResourceIds": [
+    "/subscriptions/<SUBSCRIPTION_ID>/resourcegroups/<RESOURCE_GROUP>/providers/microsoft.operationalinsights/workspaces/<WORKSPACE_NAME>"
+  ],
+  "fromTemplateId": "sentinel-UserWorkbook",
+  "context": {
+    "ownerId": "/subscriptions/<SUBSCRIPTION_ID>/resourcegroups/<RESOURCE_GROUP>/providers/microsoft.operationalinsights/workspaces/<WORKSPACE_NAME>"
+  }
+}

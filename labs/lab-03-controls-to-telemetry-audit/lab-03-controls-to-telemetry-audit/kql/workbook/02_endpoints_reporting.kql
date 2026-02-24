@@ -1,0 +1,29 @@
+﻿let lookback = 2h;
+let staleAfter = 1h;
+let hosts = dynamic(["win-ws1","win-ws2"]);
+
+let perHost =
+Heartbeat
+| where TimeGenerated > ago(lookback)
+| where Computer in~ (hosts)
+| summarize LastHeartbeat=max(TimeGenerated) by Computer;
+
+range i from 0 to array_length(hosts)-1 step 1
+| extend Computer = tostring(hosts[i])
+| join kind=leftouter perHost on Computer
+| extend Health = case(
+    isnull(LastHeartbeat), "MISSING",
+    LastHeartbeat > ago(staleAfter), "HEALTHY",
+    "STALE"
+)
+| summarize Healthy=countif(Health=="HEALTHY"),
+          Total=count(),
+          Stale=countif(Health=="STALE"),
+          Missing=countif(Health=="MISSING"),
+          LatestHB=max(LastHeartbeat)
+| extend Left = strcat(Healthy, "/", Total)
+| extend Subtitle = "endpoints healthy"
+| extend Bottom = strcat("Stale: ", Stale, " • Missing: ", Missing, " • Latest HB: ",
+                         iff(isnull(LatestHB), "N/A", format_datetime(LatestHB, "yyyy-MM-dd HH:mm")),
+                         " • Threshold: ", tostring(staleAfter))
+| project Title="Endpoint reporting", Left, Subtitle, Bottom

@@ -1,0 +1,8 @@
+﻿// PASS: Sysmon EID 1 present recently (process creation visibility)
+let lookback = 24h;
+Event
+| where TimeGenerated > ago(lookback)
+| where EventLog == "Microsoft-Windows-Sysmon/Operational"
+| where EventID == 1
+| where Computer in~ ("win-ws1","win-ws2")
+| summarize Count=count(), LastSeen=max(TimeGenerated) by Computer
