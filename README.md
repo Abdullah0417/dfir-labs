@@ -1,11 +1,11 @@
 Hands-on DFIR labs focused on enterprise telemetry, hunting, and incident reconstruction in Azure.
 
-**This proves:** I can set up end-to-end logging pipeline (Sysmon + Security → AMA/DCR → Log Analytics/Sentinel) and use it to validate telemetry, hunt, and reconstruct incidents.
+**This proves:** I can set up an end-to-end logging pipeline (Sysmon + Security → AMA/DCR → Log Analytics/Sentinel) and use it to validate telemetry coverage, hunt, and reconstruct incidents.
 
 ## Skills demonstrated
 - Microsoft Sentinel (Log Analytics) investigation workflow
 - Azure Monitor Agent (AMA) + Data Collection Rules (DCR) telemetry onboarding
-- Windows telemetry: Sysmon + Security Event Logs (auth activity)
+- Windows telemetry: Sysmon + Security Event Logs (auth + admin activity)
 - KQL authoring + validation queries (tables + charts)
 - DFIR discipline: evidence kept local; repo contains reproducible queries + proof screenshots + notes
 
@@ -14,6 +14,7 @@ Hands-on DFIR labs focused on enterprise telemetry, hunting, and incident recons
 |---|---|---|
 | [Lab 01 — Telemetry + SIEM Validation (Sentinel)](labs/lab-01-telemetry-siem-validation/) | Confirm ingestion + baseline telemetry | KQL queries + screenshots + config proof |
 | [Lab 02 — Incident Reconstruction (Sentinel)](labs/lab-02-incident-reconstruction/README.md) | Multi-host timeline + detection + automation | KQL + incident proof + analytic rule + automation rule + workbook |
+| [Lab 03 — Controls-to-Telemetry Audit (Sentinel)](labs/lab-03-controls-to-telemetry-audit/) | Prove what security controls are observable (and where blind spots exist) | Validation KQL pack + coverage matrix + analytic rule + automation rule + workbook |
 
 ## Tooling / Stack
 - Microsoft Sentinel + Log Analytics Workspace
