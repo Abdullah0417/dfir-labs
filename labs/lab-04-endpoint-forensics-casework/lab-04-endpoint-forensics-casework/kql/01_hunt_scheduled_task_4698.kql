@@ -1,0 +1,7 @@
+﻿Event
+| where TimeGenerated > ago(24h)
+| where Computer == "win-ws1"
+| where EventLog == "Security"
+| where EventID == 4698
+| project TimeGenerated, Computer, EventID, RenderedDescription
+| order by TimeGenerated desc

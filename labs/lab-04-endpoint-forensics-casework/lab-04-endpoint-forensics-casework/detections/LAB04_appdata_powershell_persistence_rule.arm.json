@@ -1,0 +1,69 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "workspace": {
+      "type": "String",
+      "metadata": {
+        "description": "Log Analytics workspace name where Sentinel is enabled"
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+      "apiVersion": "2025-01-01-preview",
+      "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/', guid(parameters('workspace'), 'LAB04_appdata_powershell_persistence'))]",
+      "kind": "Scheduled",
+      "properties": {
+        "displayName": "LAB04 - PowerShell persistence-style script execution from AppData",
+        "description": "Detects PowerShell process creation executing a script from user AppData with bypass flags",
+        "severity": "High",
+        "enabled": true,
+        "query": "Event\n| where TimeGenerated > ago(1h)\n| where EventLog == \"Microsoft-Windows-Sysmon/Operational\"\n| where EventID == 1\n| extend Msg = coalesce(\n    tostring(column_ifexists(\"RenderedDescription\",\"\")),\n    tostring(column_ifexists(\"ParameterXml\",\"\")),\n    tostring(column_ifexists(\"EventData\",\"\"))\n  )\n| where Msg has @\"\\AdobeUpdate\\adobeupdate.ps1\"\n| extend CommandLine = extract(@\"CommandLine:\\s*(.*)\", 1, Msg)\n| project TimeGenerated, Computer, EventLog, EventID, CommandLine\n| order by TimeGenerated desc",
+        "queryFrequency": "PT5M",
+        "queryPeriod": "PT1H",
+        "triggerOperator": "GreaterThan",
+        "triggerThreshold": 0,
+        "suppressionEnabled": false,
+        "suppressionDuration": "PT0H",
+        "eventGroupingSettings": {
+          "aggregationKind": "SingleAlert"
+        },
+        "tactics": [
+          "Execution",
+          "Persistence"
+        ],
+        "techniques": [
+          "T1059.001",
+          "T1053.005"
+        ],
+        "entityMappings": [
+          {
+            "entityType": "Host",
+            "fieldMappings": [
+              {
+                "identifier": "HostName",
+                "columnName": "Computer"
+              }
+            ]
+          }
+        ],
+        "incidentConfiguration": {
+          "createIncident": true,
+          "groupingConfiguration": {
+            "enabled": true,
+            "reopenClosedIncident": false,
+            "lookbackDuration": "PT1H",
+            "matchingMethod": "AllEntities",
+            "groupByEntities": [
+              "Host"
+            ],
+            "groupByAlertDetails": [],
+            "groupByCustomDetails": []
+          }
+        }
+      }
+    }
+  ]
+}

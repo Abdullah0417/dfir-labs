@@ -1,0 +1,72 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "workspace": {
+      "type": "String"
+    }
+  },
+  "resources": [
+    {
+      "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/AutomationRules/', guid(parameters('workspace'), 'LAB04_soar_lite_automation_rule'))]",
+      "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/', guid(parameters('workspace'), 'LAB04_soar_lite_automation_rule'))]",
+      "type": "Microsoft.OperationalInsights/workspaces/providers/AutomationRules",
+      "apiVersion": "2025-01-01-preview",
+      "properties": {
+        "displayName": "LAB04 - Tag + escalate AppData PowerShell persistence",
+        "order": 1,
+        "triggeringLogic": {
+          "isEnabled": true,
+          "expirationTimeUtc": null,
+          "triggersOn": "Incidents",
+          "triggersWhen": "Created",
+          "conditions": [
+            {
+              "conditionType": "Property",
+              "conditionProperties": {
+                "propertyName": "IncidentTitle",
+                "operator": "Contains",
+                "propertyValues": [
+                  "LAB04"
+                ]
+              }
+            }
+          ]
+        },
+        "actions": [
+          {
+            "order": 1,
+            "actionType": "ModifyProperties",
+            "actionConfiguration": {
+              "status": null,
+              "classification": null,
+              "classificationReason": null,
+              "classificationComment": null,
+              "severity": null,
+              "owner": null,
+              "labels": [
+                {
+                  "labelName": "lab04",
+                  "labelType": "User"
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "actionType": "ModifyProperties",
+            "actionConfiguration": {
+              "status": null,
+              "classification": null,
+              "classificationReason": null,
+              "classificationComment": null,
+              "severity": "High",
+              "owner": null,
+              "labels": null
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "workbookDisplayName": {
+      "type": "string",
+      "defaultValue": "LAB04 - AppData PowerShell Persistence Overview",
+      "metadata": {
+        "description": "The friendly name for the workbook that is used in the Gallery or Saved List.  This name must be unique within a resource group."
+      }
+    },
+    "workbookType": {
+      "type": "string",
+      "defaultValue": "sentinel",
+      "metadata": {
+        "description": "The gallery that the workbook will been shown under. Supported values include workbook, tsg, etc. Usually, this is 'workbook'"
+      }
+    },
+    "workbookSourceId": {
+      "type": "string",
+      "defaultValue": "/subscriptions/<SUBSCRIPTION_ID>/resourcegroups/<RESOURCE_GROUP>/providers/microsoft.operationalinsights/workspaces/<WORKSPACE_NAME>",
+      "metadata": {
+        "description": "The id of resource instance to which the workbook will be associated"
+      }
+    },
+    "workbookId": {
+      "type": "string",
+      "defaultValue": "[newGuid()]",
+      "metadata": {
+        "description": "The unique guid for this workbook instance"
+      }
+    }
+  },
+  "resources": [
+    {
+      "name": "[parameters('workbookId')]",
+      "type": "microsoft.insights/workbooks",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2022-04-01",
+      "dependsOn": [],
+      "kind": "shared",
+      "properties": {
+        "displayName": "[parameters('workbookDisplayName')]",
+        "serializedData": "{\"version\":\"Notebook/1.0\",\"items\":[{\"type\":3,\"content\":{\"version\":\"KqlItem/1.0\",\"query\":\"let start = ago(24h);\\r\\nlet end = now();\\r\\nEvent\\r\\n| where TimeGenerated between (start .. end)\\r\\n| where Computer == \\\"<HOSTNAME>\\\"\\r\\n| where EventLog == \\\"Security\\\"\\r\\n| where EventID == 4698\\r\\n| make-series Count=count() default=0 on TimeGenerated from start to end step 1h by Computer\\r\\n| render timechart\",\"size\":3,\"title\":\"Security 4698 scheduled task creations (last 24h)\",\"timeContext\":{\"durationMs\":86400000},\"queryType\":0,\"resourceType\":\"microsoft.operationalinsights/workspaces\",\"visualization\":\"timechart\"},\"name\":\"query - 0\"},{\"type\":3,\"content\":{\"version\":\"KqlItem/1.0\",\"query\":\"Event\\r\\n| where TimeGenerated > ago(24h)\\r\\n| where Computer == \\\"<HOSTNAME>\\\"\\r\\n| where EventLog == \\\"Microsoft-Windows-Sysmon/Operational\\\"\\r\\n| where EventID == 1\\r\\n| extend Msg = coalesce(\\r\\n    tostring(column_ifexists(\\\"RenderedDescription\\\",\\\"\\\")),\\r\\n    tostring(column_ifexists(\\\"ParameterXml\\\",\\\"\\\")),\\r\\n    tostring(column_ifexists(\\\"EventData\\\",\\\"\\\"))\\r\\n  )\\r\\n| where Msg has @\\\"\\\\AdobeUpdate\\\\adobeupdate.ps1\\\"\\r\\n| extend CommandLine = extract(@\\\"CommandLine:\\\\s*(.*)\\\", 1, Msg)\\r\\n| project TimeGenerated, Computer, CommandLine\\r\\n| order by TimeGenerated desc\",\"size\":3,\"title\":\"Sysmon EID 1: PowerShell executing adobeupdate.ps1\",\"timeContext\":{\"durationMs\":86400000},\"queryType\":0,\"resourceType\":\"microsoft.operationalinsights/workspaces\",\"visualization\":\"table\"},\"name\":\"query - 1\",\"styleSettings\":{\"maxWidth\":\"100\"}},{\"type\":3,\"content\":{\"version\":\"KqlItem/1.0\",\"query\":\"Event\\r\\n| where TimeGenerated > ago(24h)\\r\\n| where Computer == \\\"<HOSTNAME>\\\"\\r\\n| where EventLog == \\\"Microsoft-Windows-Sysmon/Operational\\\"\\r\\n| where EventID == 1\\r\\n| extend Msg = coalesce(\\r\\n    tostring(column_ifexists(\\\"RenderedDescription\\\",\\\"\\\")),\\r\\n    tostring(column_ifexists(\\\"ParameterXml\\\",\\\"\\\")),\\r\\n    tostring(column_ifexists(\\\"EventData\\\",\\\"\\\"))\\r\\n  )\\r\\n| extend CommandLine = extract(@\\\"CommandLine:\\\\s*(.*)\\\", 1, Msg)\\r\\n| where CommandLine has \\\"powershell\\\" \\r\\n| extend Flag =\\r\\n    case(\\r\\n      CommandLine has \\\"-ExecutionPolicy Bypass\\\", \\\"ExecutionPolicy Bypass\\\",\\r\\n      CommandLine has \\\"-WindowStyle Hidden\\\", \\\"WindowStyle Hidden\\\",\\r\\n      CommandLine has \\\"-NoProfile\\\", \\\"NoProfile\\\",\\r\\n      \\\"Other\\\"\\r\\n    )\\r\\n| summarize Count=count() by Flag\\r\\n| order by Count desc\",\"size\":3,\"title\":\"PowerShell suspicious flag counts (last 24h)\",\"timeContext\":{\"durationMs\":86400000},\"queryType\":0,\"resourceType\":\"microsoft.operationalinsights/workspaces\",\"visualization\":\"piechart\"},\"name\":\"query - 2\"}],\"isLocked\":false,\"fallbackResourceIds\":[\"/subscriptions/<SUBSCRIPTION_ID>/resourcegroups/<RESOURCE_GROUP>/providers/microsoft.operationalinsights/workspaces/<WORKSPACE_NAME>\"],\"fromTemplateId\":\"sentinel-UserWorkbook\"}",
+        "version": "1.0",
+        "sourceId": "[parameters('workbookSourceId')]",
+        "category": "[parameters('workbookType')]"
+      }
+    }
+  ],
+  "outputs": {
+    "workbookId": {
+      "type": "string",
+      "value": "[resourceId( 'microsoft.insights/workbooks', parameters('workbookId'))]"
+    }
+  },
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#"
+}
