@@ -1,0 +1,19 @@
+Lab 05 — Volatility 3 attempts (summary)
+
+Goal: full-RAM triage (target: windows.info works).
+
+Environment:
+- vol.exe: C:\Program Files\Python311\Scripts\vol.exe
+- volatility3: 2.27.0 (confirmed via Python 3.11 importlib.metadata)
+- symbols: ...\work\volatility\symbols\windows\*.json.xz (offline)
+
+Representative commands (win-ws2):
+- vol -f <memdump> -s <symbols> windows.info
+- vol -f <memdump> -s <symbols> banners.Banners
+
+Observed failure pattern:
+- No suitable kernels found during pdbscan
+- Unsatisfied: kernel.layer_name / kernel.symbol_table_name
+
+Proof screenshot:
+- screenshots/02_volatility_failure_pdbscan_no_kernels.png

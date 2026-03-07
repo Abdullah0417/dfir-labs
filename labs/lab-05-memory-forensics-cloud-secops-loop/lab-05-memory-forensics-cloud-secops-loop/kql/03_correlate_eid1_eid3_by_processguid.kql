@@ -1,0 +1,33 @@
+// Lab 05 — Hunt: correlate PowerShell ProcessCreate (EID 1) to NetworkConnect (EID 3) via ProcessGuid
+// Purpose: Join the exact PowerShell process to its outbound network connection(s).
+// Why it matters: Converts "PowerShell ran" into "this specific process made this specific outbound connection".
+// Notes:
+// - This query intentionally uses RenderedDescription (not XML parsing) because it was the most reliable field shape in this lab environment.
+// - In Sentinel, run the FULL script (Ctrl+A) to avoid 'ps'/'net' being undefined if only part of the query is executed.
+
+let lookback = 24h;
+
+let ps = Event
+| where TimeGenerated > ago(lookback)
+| where Computer has "win-ws1"
+| where EventLog == "Microsoft-Windows-Sysmon/Operational"
+| where EventID == 1
+| where RenderedDescription has "powershell.exe"
+| where RenderedDescription has "EncodedCommand"
+| extend ProcessGuid = extract(@"(?i)ProcessGuid:\s*({[^}]+})", 1, RenderedDescription)
+| where isnotempty(ProcessGuid)
+| project PS_Time=TimeGenerated, Computer, ProcessGuid, PS_Desc=RenderedDescription;
+
+let net = Event
+| where TimeGenerated > ago(lookback)
+| where Computer has "win-ws1"
+| where EventLog == "Microsoft-Windows-Sysmon/Operational"
+| where EventID == 3
+| extend ProcessGuid = extract(@"(?i)ProcessGuid:\s*({[^}]+})", 1, RenderedDescription)
+| where isnotempty(ProcessGuid)
+| project NET_Time=TimeGenerated, Computer, ProcessGuid, NET_Desc=RenderedDescription;
+
+ps
+| join kind=innerunique net on Computer, ProcessGuid
+| project PS_Time, NET_Time, Computer, ProcessGuid, PS_Desc, NET_Desc
+| sort by PS_Time desc

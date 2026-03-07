@@ -1,0 +1,13 @@
+// Lab 05 — Baseline confirmation
+// Purpose: Prove Sysmon EID 1 ProcessCreate events exist for win-ws1 where PowerShell is launched with -EncodedCommand.
+// Why it matters: Establishes the telemetry baseline that feeds the later decode hunt + detection rule.
+
+Event
+| where TimeGenerated > ago(2h)
+| where Computer has "win-ws1"
+| where EventLog == "Microsoft-Windows-Sysmon/Operational"
+| where EventID == 1
+| where RenderedDescription has "powershell.exe"
+| where RenderedDescription has "EncodedCommand"
+| project TimeGenerated, Computer, RenderedDescription
+| sort by TimeGenerated desc

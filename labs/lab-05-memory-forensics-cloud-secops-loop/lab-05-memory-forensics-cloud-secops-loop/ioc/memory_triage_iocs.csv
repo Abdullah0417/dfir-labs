@@ -1,0 +1,6 @@
+ioc_type,ioc_value,source,evidence_ref
+keyword_in_process_dump,LAB05_CANARY_START,Process dump strings,screenshots/08_strings_hits_canary_markers.png
+keyword_in_process_dump,Invoke-WebRequest,Process dump strings,screenshots/08_strings_hits_canary_markers.png
+domain,example.com,Process dump strings,screenshots/08_strings_hits_canary_markers.png
+keyword_in_process_dump,Start-Sleep,Process dump strings,screenshots/08_strings_hits_canary_markers.png
+commandline_contains,-EncodedCommand,Process dump strings + Sysmon EID1,screenshots/09_strings_hits_encoded_commandline.png; screenshots/10_sentinel_sysmon_eid1_encodedcommand.png

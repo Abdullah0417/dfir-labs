@@ -1,0 +1,72 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "workspace": {
+      "type": "String"
+    }
+  },
+  "resources": [
+    {
+      "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/AutomationRules/655b168c-9c50-445f-b560-e55dce058ad8')]",
+      "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/655b168c-9c50-445f-b560-e55dce058ad8')]",
+      "type": "Microsoft.OperationalInsights/workspaces/providers/AutomationRules",
+      "apiVersion": "2025-01-01-preview",
+      "properties": {
+        "displayName": "LAB05 - Tag + escalate Encoded PowerShell",
+        "order": 4,
+        "triggeringLogic": {
+          "isEnabled": true,
+          "expirationTimeUtc": null,
+          "triggersOn": "Incidents",
+          "triggersWhen": "Created",
+          "conditions": [
+            {
+              "conditionType": "Property",
+              "conditionProperties": {
+                "propertyName": "IncidentRelatedAnalyticRuleIds",
+                "operator": "Contains",
+                "propertyValues": [
+                  "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/a7a65dd6-f43d-43df-a331-dcfdce6f0a5e')]"
+                ]
+              }
+            }
+          ]
+        },
+        "actions": [
+          {
+            "order": 1,
+            "actionType": "ModifyProperties",
+            "actionConfiguration": {
+              "status": null,
+              "classification": null,
+              "classificationReason": null,
+              "classificationComment": null,
+              "severity": null,
+              "owner": null,
+              "labels": [
+                {
+                  "labelName": "lab05",
+                  "labelType": "User"
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "actionType": "ModifyProperties",
+            "actionConfiguration": {
+              "status": null,
+              "classification": null,
+              "classificationReason": null,
+              "classificationComment": null,
+              "severity": "High",
+              "owner": null,
+              "labels": null
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

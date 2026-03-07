@@ -1,0 +1,16 @@
+// Lab 05 — Hunt: decode EncodedCommand from RenderedDescription
+// Purpose: Extract the Base64 blob from the PowerShell command line and decode it to show the in-memory script content.
+// Why it matters: Turns a high-noise indicator (-EncodedCommand) into an evidence-rich signal (decoded payload).
+
+Event
+| where TimeGenerated > ago(24h)
+| where Computer has "win-ws1"
+| where EventLog == "Microsoft-Windows-Sysmon/Operational"
+| where EventID == 1
+| where RenderedDescription has "EncodedCommand"
+| extend EncodedBlob = extract(@"(?i)(?:-enc(?:odedcommand)?\s+)([A-Za-z0-9+/=]+)", 1, RenderedDescription)
+| where isnotempty(EncodedBlob)
+| extend DecodedRaw = base64_decode_tostring(EncodedBlob)
+| extend Decoded = replace_regex(DecodedRaw, @"\x00", "")
+| project TimeGenerated, Computer, EncodedBlob, Decoded, RenderedDescription
+| sort by TimeGenerated desc

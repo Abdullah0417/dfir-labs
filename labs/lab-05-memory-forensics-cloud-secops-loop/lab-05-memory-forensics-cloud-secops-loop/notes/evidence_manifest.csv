@@ -1,0 +1,3 @@
+"item_type","file_name","sha256","size_bytes","collected_utc","source_host","storage_location"
+"memory_image","win-ws1_mem_20260301_174115.raw","4BE88E770264E24C8CA1A9FED0DBF6BFFE2F1E2EA4E8B90302D8DCCD431241E6","11811160064","2026-03-01T23:52:06Z","win-ws1","C:\Evidence\Cases\2026-02-26_Lab05_WinWS1_MemoryTriage\raw\memory"
+"process_dump","ps_canary_20260303_222923.dmp","5E9274012BFA8E76C16F613D9F55F5E432AE1AF7ACF29096746ABF1174171D4E","241498155","2026-03-04T04:51:42Z","win-ws1","C:\Evidence\Cases\2026-02-26_Lab05_WinWS1_MemoryTriage\raw\memory"

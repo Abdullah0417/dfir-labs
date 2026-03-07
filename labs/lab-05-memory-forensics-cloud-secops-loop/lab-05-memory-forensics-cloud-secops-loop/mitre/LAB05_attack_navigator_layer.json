@@ -1,0 +1,42 @@
+﻿{
+  "name": "LAB05 - Encoded PowerShell + Correlated Egress",
+  "versions": {
+    "attack": "16",
+    "navigator": "4.9.0",
+    "layer": "4.5"
+  },
+  "domain": "enterprise-attack",
+  "description": "Lab 05: Detect encoded PowerShell and decode payload; correlate process to network via ProcessGuid; validate incident automation.",
+  "filters": {
+    "platforms": ["Windows"]
+  },
+  "sorting": 0,
+  "layout": {
+    "layout": "side",
+    "showID": true,
+    "showName": true
+  },
+  "techniques": [
+    {
+      "techniqueID": "T1059",
+      "score": 1,
+      "color": "#ff6666",
+      "comment": "Scripting interpreter (parent mapping used in rule)"
+    },
+    {
+      "techniqueID": "T1059.001",
+      "score": 2,
+      "color": "#ff0000",
+      "comment": "EncodedCommand decoded from Sysmon EID 1 RenderedDescription; rule + automation validated"
+    }
+  ],
+  "gradient": {
+    "colors": ["#ffffff", "#ff6666", "#ff0000"],
+    "minValue": 0,
+    "maxValue": 2
+  },
+  "metadata": [
+    { "name": "lab", "value": "LAB05" },
+    { "name": "host", "value": "win-ws1" }
+  ]
+}

@@ -1,0 +1,160 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "5226aa6d-bdb5-4d97-adbc-70d1f6bc3dd2",
+            "key": "5226aa6d-bdb5-4d97-adbc-70d1f6bc3dd2",
+            "name": "Host",
+            "value": "win-ws1",
+            "type": 1,
+            "version": ""
+          },
+          {
+            "id": "41540a41-94ba-452e-a8b3-a9e976ddfe5d",
+            "key": "41540a41-94ba-452e-a8b3-a9e976ddfe5d",
+            "name": "Marker",
+            "value": "LAB05_CANARY_START",
+            "type": 1,
+            "version": ""
+          }
+        ],
+        "style": "pills"
+      },
+      "name": "parameters - 1",
+      "id": "eba513e6-8ebf-48c3-a53c-736ab564d461"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "Lab05 Case View — Canary-only Encoded PowerShell → Decoded Payload → Correlated Egress\r\n\r\nSignal: Sysmon EID 1 EncodedCommand decoded from RenderedDescription\r\n\r\nCorrelation: EID 1 ↔ EID 3 joined by ProcessGuid\r\n\r\nResponse: incident auto-tagged lab05 and escalated to High"
+      },
+      "name": "text - 2",
+      "id": "23807c87-2f43-4904-b001-136894ff6b3c"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let Host = \"{Host}\";\r\nlet Marker = \"{Marker}\";\r\nEvent\r\n| where TimeGenerated > ago(24h)\r\n| where Computer has Host\r\n| where EventLog == \"Microsoft-Windows-Sysmon/Operational\"\r\n| where EventID == 1\r\n| where RenderedDescription has \"EncodedCommand\"\r\n| extend EncodedBlob = extract(@\"(?i)(?:-enc(?:odedcommand)?\\s+)([A-Za-z0-9+/=]+)\", 1, RenderedDescription)\r\n| where isnotempty(EncodedBlob)\r\n| extend DecodedRaw = base64_decode_tostring(EncodedBlob)\r\n| extend Decoded = replace_regex(DecodedRaw, @\"\\x00\", \"\")\r\n| where Decoded has Marker\r\n| summarize LastCanary=max(TimeGenerated)",
+        "size": 3,
+        "title": "Latest canary execution (UTC)",
+        "timeContext": {
+          "durationMs": 86400000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "table",
+        "crossComponentResources": [
+          "/subscriptions/<SUBSCRIPTION_ID>/resourcegroups/rg-dfir-lab-scus/providers/microsoft.operationalinsights/workspaces/law-dfir"
+        ]
+      },
+      "name": "query - 0",
+      "id": "a8f0f2fd-a40e-47a7-9b43-d355ffab1b04"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let Host = \"{Host}\";\r\nlet Marker = \"{Marker}\";\r\nEvent\r\n| where TimeGenerated > ago(24h)\r\n| where Computer has Host\r\n| where EventLog == \"Microsoft-Windows-Sysmon/Operational\"\r\n| where EventID == 1\r\n| where RenderedDescription has \"EncodedCommand\"\r\n| extend EncodedBlob = extract(@\"(?i)(?:-enc(?:odedcommand)?\\s+)([A-Za-z0-9+/=]+)\", 1, RenderedDescription)\r\n| where isnotempty(EncodedBlob)\r\n| extend DecodedRaw = base64_decode_tostring(EncodedBlob)\r\n| extend Decoded = replace_regex(DecodedRaw, @\"\\x00\", \"\")\r\n| where Decoded has Marker\r\n| summarize CanaryHits=count()",
+        "size": 3,
+        "title": "Canary executions (24h)",
+        "timeContext": {
+          "durationMs": 86400000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<SUBSCRIPTION_ID>/resourcegroups/rg-dfir-lab-scus/providers/microsoft.operationalinsights/workspaces/law-dfir"
+        ]
+      },
+      "name": "query - 3",
+      "id": "db5b792d-fc09-45fb-9bfb-2f8a65fd82c2"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let Host = \"{Host}\";\r\nlet Marker = \"{Marker}\";\r\nlet lookback = 24h;\r\n\r\nlet ps = Event\r\n| where TimeGenerated > ago(lookback)\r\n| where Computer has Host\r\n| where EventLog == \"Microsoft-Windows-Sysmon/Operational\"\r\n| where EventID == 1\r\n| where RenderedDescription has \"EncodedCommand\"\r\n| extend EncodedBlob = extract(@\"(?i)(?:-enc(?:odedcommand)?\\s+)([A-Za-z0-9+/=]+)\", 1, RenderedDescription)\r\n| where isnotempty(EncodedBlob)\r\n| extend DecodedRaw = base64_decode_tostring(EncodedBlob)\r\n| extend Decoded = replace_regex(DecodedRaw, @\"\\x00\", \"\")\r\n| where Decoded has Marker\r\n| extend ProcessGuid = extract(@\"(?i)ProcessGuid:\\s*({[^}]+})\", 1, RenderedDescription)\r\n| where isnotempty(ProcessGuid)\r\n| project Computer, ProcessGuid;\r\n\r\nlet net = Event\r\n| where TimeGenerated > ago(lookback)\r\n| where Computer has Host\r\n| where EventLog == \"Microsoft-Windows-Sysmon/Operational\"\r\n| where EventID == 3\r\n| extend ProcessGuid = extract(@\"(?i)ProcessGuid:\\s*({[^}]+})\", 1, RenderedDescription)\r\n| where isnotempty(ProcessGuid)\r\n| project Computer, ProcessGuid;\r\n\r\nps\r\n| join kind=innerunique net on Computer, ProcessGuid\r\n| summarize CorrelatedEgress=count()",
+        "size": 3,
+        "title": "Canary correlated egress (24h)",
+        "timeContext": {
+          "durationMs": 86400000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<SUBSCRIPTION_ID>/resourcegroups/rg-dfir-lab-scus/providers/microsoft.operationalinsights/workspaces/law-dfir"
+        ]
+      },
+      "name": "query - 4",
+      "id": "e40529d8-9ffc-4c03-ae20-d1b96edae7cc"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let Host = \"{Host}\";\r\nlet Marker = \"{Marker}\";\r\nlet lookback = 2h;\r\n\r\nlet start = ago(lookback);\r\nlet stop  = now();\r\nlet step  = 1m;\r\n\r\nlet ps = Event\r\n| where TimeGenerated between (start .. stop)\r\n| where Computer has Host\r\n| where EventLog == \"Microsoft-Windows-Sysmon/Operational\"\r\n| where EventID == 1\r\n| where RenderedDescription has \"EncodedCommand\"\r\n| extend EncodedBlob = extract(@\"(?i)(?:-enc(?:odedcommand)?\\s+)([A-Za-z0-9+/=]+)\", 1, RenderedDescription)\r\n| where isnotempty(EncodedBlob)\r\n| extend DecodedRaw = base64_decode_tostring(EncodedBlob)\r\n| extend Decoded = replace_regex(DecodedRaw, @\"\\x00\", \"\")\r\n| where Decoded has Marker\r\n| extend ProcessGuid = extract(@\"(?i)ProcessGuid:\\s*({[^}]+})\", 1, RenderedDescription)\r\n| where isnotempty(ProcessGuid)\r\n| project TimeGenerated=TimeGenerated, Signal=\"ProcessCreate\", ProcessGuid;\r\n\r\nlet net = Event\r\n| where TimeGenerated between (start .. stop)\r\n| where Computer has Host\r\n| where EventLog == \"Microsoft-Windows-Sysmon/Operational\"\r\n| where EventID == 3\r\n| extend ProcessGuid = extract(@\"(?i)ProcessGuid:\\s*({[^}]+})\", 1, RenderedDescription)\r\n| where isnotempty(ProcessGuid)\r\n| where ProcessGuid in (ps | distinct ProcessGuid)\r\n| project TimeGenerated=TimeGenerated, Signal=\"NetworkConnect\", ProcessGuid;\r\n\r\nunion (ps | project TimeGenerated, Signal),\r\n      (net | project TimeGenerated, Signal)\r\n| make-series Count=count() default=0 on TimeGenerated from start to stop step step by Signal\r\n| render columnchart",
+        "size": 3,
+        "title": "Canary timeline (ProcessCreate + NetworkConnect)",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<SUBSCRIPTION_ID>/resourcegroups/rg-dfir-lab-scus/providers/microsoft.operationalinsights/workspaces/law-dfir"
+        ]
+      },
+      "name": "query - 5",
+      "id": "bfe549f1-19ae-46af-b8c6-1b78e7969e5d"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let Host = \"{Host}\";\r\nlet Marker = \"{Marker}\";\r\nEvent\r\n| where TimeGenerated > ago(24h)\r\n| where Computer has Host\r\n| where EventLog == \"Microsoft-Windows-Sysmon/Operational\"\r\n| where EventID == 1\r\n| where RenderedDescription has \"EncodedCommand\"\r\n| extend EncodedBlob = extract(@\"(?i)(?:-enc(?:odedcommand)?\\s+)([A-Za-z0-9+/=]+)\", 1, RenderedDescription)\r\n| where isnotempty(EncodedBlob)\r\n| extend DecodedRaw = base64_decode_tostring(EncodedBlob)\r\n| extend Decoded = replace_regex(DecodedRaw, @\"\\x00\", \"\")\r\n| where Decoded has Marker\r\n| extend DecodedPreview = substring(Decoded, 0, 240)\r\n| project TimeGenerated, Computer, DecodedPreview\r\n| sort by TimeGenerated desc\r\n| take 5",
+        "size": 3,
+        "title": "Decoded payload (preview)",
+        "timeContext": {
+          "durationMs": 86400000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<SUBSCRIPTION_ID>/resourcegroups/rg-dfir-lab-scus/providers/microsoft.operationalinsights/workspaces/law-dfir"
+        ]
+      },
+      "name": "query - 6",
+      "id": "913a9c16-8143-4b51-924d-f1a84fcc2ae0"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let Host = \"{Host}\";\r\nlet Marker = \"{Marker}\";\r\nlet lookback = 24h;\r\n\r\nlet ps = Event\r\n| where TimeGenerated > ago(lookback)\r\n| where Computer has Host\r\n| where EventLog == \"Microsoft-Windows-Sysmon/Operational\"\r\n| where EventID == 1\r\n| where RenderedDescription has \"EncodedCommand\"\r\n| extend EncodedBlob = extract(@\"(?i)(?:-enc(?:odedcommand)?\\s+)([A-Za-z0-9+/=]+)\", 1, RenderedDescription)\r\n| where isnotempty(EncodedBlob)\r\n| extend DecodedRaw = base64_decode_tostring(EncodedBlob)\r\n| extend Decoded = replace_regex(DecodedRaw, @\"\\x00\", \"\")\r\n| where Decoded has Marker\r\n| extend ProcessGuid = extract(@\"(?i)ProcessGuid:\\s*({[^}]+})\", 1, RenderedDescription)\r\n| where isnotempty(ProcessGuid)\r\n| project PS_Time=TimeGenerated, Computer, ProcessGuid;\r\n\r\nlet net = Event\r\n| where TimeGenerated > ago(lookback)\r\n| where Computer has Host\r\n| where EventLog == \"Microsoft-Windows-Sysmon/Operational\"\r\n| where EventID == 3\r\n| extend ProcessGuid = extract(@\"(?i)ProcessGuid:\\s*({[^}]+})\", 1, RenderedDescription)\r\n| extend DestinationIp = extract(@\"(?i)DestinationIp:\\s*([^\\s]+)\", 1, RenderedDescription)\r\n| extend DestinationPort = toint(extract(@\"(?i)DestinationPort:\\s*(\\d+)\", 1, RenderedDescription))\r\n| where isnotempty(ProcessGuid)\r\n| project NET_Time=TimeGenerated, Computer, ProcessGuid, DestinationIp, DestinationPort;\r\n\r\nps\r\n| join kind=innerunique net on Computer, ProcessGuid\r\n| project PS_Time, NET_Time, DestinationIp, DestinationPort, ProcessGuid\r\n| sort by NET_Time desc\r\n| take 10",
+        "size": 3,
+        "title": "Canary → destination (ProcessGuid join)",
+        "timeContext": {
+          "durationMs": 86400000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "/subscriptions/<SUBSCRIPTION_ID>/resourcegroups/rg-dfir-lab-scus/providers/microsoft.operationalinsights/workspaces/law-dfir"
+        ]
+      },
+      "name": "query - 7",
+      "id": "30a85330-330a-46bb-9a5d-36fb48a624cb"
+    }
+  ],
+  "isLocked": true,
+  "fallbackResourceIds": [
+    "/subscriptions/<SUBSCRIPTION_ID>/resourcegroups/rg-dfir-lab-scus/providers/microsoft.operationalinsights/workspaces/law-dfir"
+  ],
+  "fromTemplateId": "sentinel-UserWorkbook",
+  "context": {
+    "ownerId": "/subscriptions/<SUBSCRIPTION_ID>/resourcegroups/rg-dfir-lab-scus/providers/microsoft.operationalinsights/workspaces/law-dfir"
+  }
+}
