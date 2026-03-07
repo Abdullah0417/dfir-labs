@@ -23,3 +23,17 @@ Thumbs.db
 *.p12
 *.key
 .env
+
+# Lab 07 Terraform local-only
+**/.terraform/
+**/*.tfstate
+**/*.tfstate.*
+**/terraform.tfvars
+**/*.tfplan
+**/lambda_function.zip
+
+# Local evidence / raw exports
+**/raw/
+**/*finding*.json
+**/*email*.eml
+**/*email*.msg
