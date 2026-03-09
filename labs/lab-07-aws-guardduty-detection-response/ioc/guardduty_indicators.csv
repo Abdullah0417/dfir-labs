@@ -1,0 +1,2 @@
+finding_id,finding_type,asff_type,severity,resource_type,resource_or_principal,region,evidence_ref
+0b76dfb5c53ec47d6cd80dc0369c8a199b39d35e593e629757e083d2d67ab296,UnauthorizedAccess:EC2/TorClient,Threats/UnauthorizedAccess:EC2/TorClient,High,AWS::EC2::Instance,i-99999999,us-east-1,"screenshots/05_alert_fired.png; screenshots/securityhub_asff_finding_json.png; screenshots/06_response_executed.png"

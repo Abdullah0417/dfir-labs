@@ -1,0 +1,3 @@
+aws_region   = "us-east-1"
+project_name = "lab07-guardduty"
+alert_email  = "replace-me@example.com"

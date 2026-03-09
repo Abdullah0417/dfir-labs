@@ -1,0 +1,16 @@
+{
+  "source": ["aws.securityhub"],
+  "detail-type": ["Security Hub Findings - Imported"],
+  "detail": {
+    "findings": {
+      "ProductArn": ["arn:aws:securityhub:us-east-1::product/aws/guardduty"],
+      "Severity": {
+        "Label": ["HIGH", "CRITICAL"]
+      },
+      "Workflow": {
+        "Status": ["NEW"]
+      },
+      "RecordState": ["ACTIVE"]
+    }
+  }
+}
