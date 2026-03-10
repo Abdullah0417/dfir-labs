@@ -4,7 +4,7 @@ Hands-on DFIR and cloud SecOps labs covering telemetry validation, threat huntin
 - I can build and validate telemetry pipelines across Windows, Azure, and AWS.
 - I can turn findings into usable security content: hunts, scheduled analytics, automation, workbooks, and exported artifacts.
 - I can do publish-safe forensic work without dumping raw evidence into GitHub.
-- I can document technical decisions honestly, including failed paths, root-cause analysis, and clean pivots when an environment blocks the original plan.
+- I can correlate endpoint, log, and cloud evidence into clear timelines, detections, and response actions.
 
 ## Skills demonstrated
 - Microsoft Sentinel investigation workflow: incidents, entities, timelines, workbooks, and rule tuning
