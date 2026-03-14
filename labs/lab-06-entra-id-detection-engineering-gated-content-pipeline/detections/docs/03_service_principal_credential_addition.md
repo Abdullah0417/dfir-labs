@@ -1,4 +1,4 @@
-# LAB06 - Service principal credential addition
+# Service principal credential addition
 
 ## Purpose
 
