@@ -97,9 +97,8 @@ jobs:
         shell: bash
         run: |
           python "${LAB06_DIR}/scripts/evaluate_whatif.py" \
-            "${LAB06_DIR}" \
             "${LAB06_DIR}/artifacts/whatif.json" \
-            "${AZURE_RG_TEST}"
+            | tee "${LAB06_DIR}/artifacts/whatif-evaluation.json"
 
       - name: Deploy content to test workspace
         shell: bash

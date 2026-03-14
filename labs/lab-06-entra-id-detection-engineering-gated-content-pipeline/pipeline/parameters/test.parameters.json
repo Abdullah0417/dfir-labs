@@ -2,17 +2,11 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "roleAssignmentOperation1": {
-      "value": "Add member to role"
+    "location": {
+      "value": "eastus"
     },
-    "roleAssignmentOperation2": {
-      "value": "Remove member from role"
-    },
-    "servicePrincipalCredentialOperation1": {
-      "value": "Add service principal credentials"
-    },
-    "servicePrincipalCredentialOperation2": {
-      "value": "Update service principal"
+    "workbookDisplayName": {
+      "value": "Lab06 Identity Detection Dashboard"
     }
   }
 }
