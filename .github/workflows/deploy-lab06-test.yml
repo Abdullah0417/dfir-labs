@@ -87,7 +87,6 @@ jobs:
             --resource-group "${AZURE_RG_TEST}" \
             --template-file "${LAB06_DIR}/pipeline/deploy/main.bicep" \
             --parameters @"${LAB06_DIR}/pipeline/parameters/test.parameters.json" \
-                         workspaceName="${SENTINEL_WORKSPACE_NAME_TEST}" \
                          location="${AZURE_LOCATION}" \
                          workbookSourceId="${TEST_WORKSPACE_ID}" \
             --result-format FullResourcePayloads \
