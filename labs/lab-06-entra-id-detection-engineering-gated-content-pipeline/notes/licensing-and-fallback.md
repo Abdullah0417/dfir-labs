@@ -19,5 +19,5 @@ A fallback path was not needed. The required `AuditLogs` and `SigninLogs` data w
 - Validation date: `2026-03-12`
 - Workspace used for validation: `law-dfir-lab06-authoring`
 - Supporting screenshots:
-  - `screenshots/02_auditlogs_validation.png`
-  - `screenshots/03_signinlogs_validation.png`
+  - [AuditLogs validation](../screenshots/02_auditlogs_validation.png)
+  - [SigninLogs validation](../screenshots/03_signinlogs_validation.png)
