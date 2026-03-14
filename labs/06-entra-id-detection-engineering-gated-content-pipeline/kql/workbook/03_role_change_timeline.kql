@@ -1,8 +1,0 @@
-AuditLogs
-| where TimeGenerated >= ago(7d)
-| where OperationName in ("Add member to role", "Remove member from role")
-| extend InitiatingUserUPN = tostring(InitiatedBy.user.userPrincipalName)
-| mv-expand TargetResources
-| extend TargetDisplayName = tostring(TargetResources.displayName)
-| project TimeGenerated, OperationName, InitiatingUserUPN, TargetDisplayName, CorrelationId
-| order by TimeGenerated desc
