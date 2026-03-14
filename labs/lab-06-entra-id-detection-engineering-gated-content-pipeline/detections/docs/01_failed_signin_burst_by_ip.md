@@ -56,6 +56,6 @@ This rule depends on `SigninLogs`. If `SigninLogs` is not licensed or not flowin
 
 ## Evidence
 
-- `04_failed_signin_burst_hunt.png`
-- `07_rule_failed_signin_burst.png`
-- `10_identity_incident_triggered.png`
+- [Failed sign-in burst hunt result](../../screenshots/04_failed_signin_burst_hunt.png)
+- [Scheduled analytic configuration](../../screenshots/08_rule_failed_signin_burst.png)
+- [Incident triggered from the rule](../../screenshots/11_identity_incident_triggered.png)
