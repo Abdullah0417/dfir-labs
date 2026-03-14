@@ -135,7 +135,7 @@ Related proof:
 
 ## Detections shipped
 
-### LAB06 - Failed sign-in burst by IP
+### Failed sign-in burst by IP
 
 **Purpose**  
 Detect repeated failed Microsoft Entra interactive sign-ins from a single IP across multiple users within a short time window.
@@ -151,7 +151,7 @@ It is a strong identity detection for password-spraying or brute-force style act
 **Proof**
 - [Failed sign-in burst analytic](screenshots/08_rule_failed_signin_burst.png)
 
-### LAB06 - Directory role assignment change
+### Directory role assignment change
 
 **Purpose**  
 Detect Microsoft Entra directory role assignment or role membership changes that may increase privilege or support persistence.
@@ -167,7 +167,7 @@ It is a clean `AuditLogs` signal with obvious security impact and very little am
 **Proof**
 - [Directory role assignment analytic](screenshots/09_rule_role_assignment_change.png)
 
-### LAB06 - Service principal credential addition
+### Service principal credential addition
 
 **Purpose**  
 Detect the addition of a new password credential to a Microsoft Entra service principal.
