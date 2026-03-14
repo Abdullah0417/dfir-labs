@@ -1,0 +1,16 @@
+{
+  "version": "Notebook/1.0",
+  "isLocked": false,
+  "fallbackResourceIds": [
+    "Azure Monitor"
+  ],
+  "items": [
+    {
+      "type": 1,
+      "name": "text - 0",
+      "content": {
+        "json": "# LAB06 deployed workbook\nThis lightweight workbook was deployed by GitHub Actions into the test Sentinel workspace.\n\nThe full analyst workbook is maintained in the authoring workspace and exported separately as evidence in `workbooks/exports/`."
+      }
+    }
+  ]
+}

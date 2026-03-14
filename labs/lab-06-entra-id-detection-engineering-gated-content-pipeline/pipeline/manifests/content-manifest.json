@@ -1,0 +1,35 @@
+{
+  "lab": "lab-06-entra-id-detection-engineering-gated-content-pipeline",
+  "package_prefix": "lab06-content",
+  "allowed_resource_types": [
+    "Microsoft.SecurityInsights/alertRules",
+    "Microsoft.SecurityInsights/automationRules",
+    "Microsoft.Insights/workbooks"
+  ],
+  "deployable_files": [
+    "pipeline/deploy/main.bicep",
+    "pipeline/deploy/workbook.serialized.json",
+    "pipeline/parameters/test.parameters.json",
+    "kql/analytics/failed_signin_burst_by_ip.kql",
+    "kql/analytics/directory_role_assignment_change.kql",
+    "kql/analytics/service_principal_credential_addition.kql"
+  ],
+  "proof_files": [
+    "README.md",
+    "executive-summary.md",
+    "mitre/mitre_mapping.md",
+    "notes/licensing-and-fallback.md",
+    "notes/scenario-execution.md",
+    "notes/oidc-setup.md",
+    "notes/redactions.md",
+    "detections/docs/01_failed_signin_burst_by_ip.md",
+    "detections/docs/02_directory_role_assignment_change.md",
+    "detections/docs/03_service_principal_credential_addition.md"
+  ],
+  "proof_directories": [
+    "screenshots",
+    "detections/exports/analytics",
+    "automation/exports",
+    "workbooks/exports"
+  ]
+}
