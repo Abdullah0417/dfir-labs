@@ -1,4 +1,4 @@
-# Redactions — automation (LAB04)
+# Redactions — automation
 
 ## What was exported
 - `automation/LAB04_soar_lite_automation_rule.arm.json` is a publish-safe ARM-style export representing the automation rule.
