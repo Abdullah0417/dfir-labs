@@ -1,4 +1,4 @@
-# MITRE ATT&CK Mapping — Lab 04
+# MITRE ATT&CK Mapping
 
 ## T1059.001 — PowerShell (Execution)
 - **Why it applies:** PowerShell executed a script from a user profile path with bypass-style flags.
