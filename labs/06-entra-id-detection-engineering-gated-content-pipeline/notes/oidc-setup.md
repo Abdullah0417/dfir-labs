@@ -1,36 +1,43 @@
-# Lab 06 OIDC setup record
+# OIDC setup record
 
-## GitHub
-- Org: Abdullah0417
-- Repo: dfir-labs
-- Environment: sentinel-test
+## Purpose
 
-## Azure app registration
-- Display name: dfir-lab06-gh-oidc-test-20260313
-- App ID / client ID: b342fac8-4e08-4869-97b9-6aaaa24a9075
-- App object ID: bc380db1-f5fe-49c3-90f5-bf409e6794ba
-- Service principal object ID: 3c96eb90-0fed-4385-aa83-6ba7a6e9eb0a
+This note records the GitHub OIDC trust path used for the Lab 06 test deployment proof without publishing the full set of local object IDs and resource IDs.
 
-## Federated credential
-- Name: github-sentinel-test
-- Issuer: https://token.actions.githubusercontent.com
-- Subject: repo:Abdullah0417/dfir-labs:environment:sentinel-test
-- Audience: api://AzureADTokenExchange
+## GitHub side
 
-## Azure RBAC
-- Role: Contributor
-- Scope: /subscriptions/d4c995f0-0cba-4d52-8272-4c568d44b677/resourceGroups/rg-dfir-lab06-test
+- Org: `Abdullah0417`
+- Repo: `dfir-labs`
+- Environment: `sentinel-test`
+- Protection mode: required reviewer enabled, protected branch deployment gate in place
 
-## GitHub environment protection
-- Required reviewers: enabled
-- Reviewer listed: Abdullah0417
-- Prevent self-review: disabled
-- Deployment branches: protected branches only (`main`)
+## Azure side
 
-## Verification
-- App verification command completed: YES
-- Federated credential verification completed: YES
-- RBAC verification completed: YES
-- GitHub environment secrets configured: YES
-- GitHub environment variables configured: YES
-- Smoke-test workflow run ID:23082754306
+- App registration display name used for the OIDC trust: `dfir-lab06-gh-oidc-test-20260313`
+- Federated credential name: `github-sentinel-test`
+- Audience: `api://AzureADTokenExchange`
+- Scope used for validation: Contributor at the Lab 06 test resource group scope
+
+## What was verified
+
+- The federated credential was created for the GitHub environment trust path.
+- The Lab 06 test resource group had the required Contributor assignment for the OIDC service principal.
+- The GitHub environment gate was configured before the smoke test and deploy runs.
+- The smoke-test workflow approved successfully, logged in to Azure with OIDC, and confirmed access to the Lab 06 test workspace.
+- The deploy workflow passed the gate again and completed the controlled test deployment path.
+
+## Proof screenshots
+
+- [Azure portal federated credential](../screenshots/14_azure_portal_federated_credential.png)
+- [GitHub environment configuration](../screenshots/15_github_environment.png)
+- [Environment approval gate](../screenshots/16_environment_approval_gate.png)
+- [OIDC RBAC assignment](../screenshots/17_oidc_rbac_assignment.png)
+- [OIDC smoke-test login success](../screenshots/18_oidc_smoke_test_login_success.png)
+- [OIDC active account confirmed](../screenshots/19_oidc_active_account_confirmed.png)
+- [OIDC smoke-test resource group confirmed](../screenshots/20_oidc_smoke_test_rg_confirmed.png)
+- [Deploy approval gate](../screenshots/23_deploy_approval_gate.png)
+- [Test workspace deploy success](../screenshots/25_test_workspace_deploy_success.png)
+
+## Publish-safety note
+
+The exact app IDs, object IDs, service principal IDs, subscription-scope resource IDs, and workflow run IDs were kept out of this public note on purpose. They were useful during execution, but they are not needed to explain or prove the trust path.
