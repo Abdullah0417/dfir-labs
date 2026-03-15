@@ -1,4 +1,4 @@
-# Detection tuning notes (Lab 05)
+# Detection tuning notes
 
 Rule: **LAB05 - Encoded PowerShell (decoded payload present)** (`detections/LAB05_encoded_powershell_decoded_rule.json`)
 
