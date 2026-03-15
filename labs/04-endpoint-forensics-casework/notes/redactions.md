@@ -1,4 +1,4 @@
-# Redactions — Lab 04
+# Redactions
 
 ## Evidence boundary
 - Raw evidence and parsed outputs are stored **locally only** under:
