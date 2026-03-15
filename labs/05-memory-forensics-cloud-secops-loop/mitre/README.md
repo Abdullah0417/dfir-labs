@@ -1,4 +1,4 @@
-# MITRE mapping (Lab 05)
+# MITRE mapping
 
 Publish-safe ATT&CK mapping artifacts for this lab:
 - `LAB05_mitre_mapping.md` — evidence-backed mapping table
