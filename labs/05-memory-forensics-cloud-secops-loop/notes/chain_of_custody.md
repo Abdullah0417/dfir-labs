@@ -1,4 +1,4 @@
-# Chain of custody (Lab 05)
+# Chain of custody
 
 ## Case
 - **Case ID:** 2026-02-26_Lab05_WinWS1_MemoryTriage
