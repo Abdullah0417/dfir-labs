@@ -2,7 +2,7 @@
 
 This file documents what was removed or replaced from exported Sentinel artifacts before committing to GitHub.
 
-## Lab 03 — Analytic Rule Export (Rules-as-Code)
+## Analytic Rule Export (Rules-as-Code)
 
 **Artifact**
 - `detections/LAB03_audit_log_tampering_rule.arm.json`
