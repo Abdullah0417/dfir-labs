@@ -1,4 +1,4 @@
-# Redactions (Lab 03)
+# Redactions
 
 Goal: keep the repo **publish-safe** while still being **reproducible**.
 
