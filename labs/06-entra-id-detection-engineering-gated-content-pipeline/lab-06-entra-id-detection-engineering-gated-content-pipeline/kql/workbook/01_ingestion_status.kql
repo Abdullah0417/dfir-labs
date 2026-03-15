@@ -1,5 +1,0 @@
-AuditLogs
-| where TimeGenerated >= ago(24h)
-| summarize RowCount=count(), LastSeen=max(TimeGenerated)
-| extend TableName = "AuditLogs"
-| project TableName, RowCount, LastSeen

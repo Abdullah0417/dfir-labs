@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: sentinel-test
     env:
-      LAB06_DIR: labs/lab-06-entra-id-detection-engineering-gated-content-pipeline
+      LAB06_DIR: labs/06-entra-id-detection-engineering-gated-content-pipeline
       AZURE_RG_TEST: ${{ vars.AZURE_RG_TEST }}
       AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
       SENTINEL_WORKSPACE_NAME_TEST: ${{ vars.SENTINEL_WORKSPACE_NAME_TEST }}
@@ -59,4 +59,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: lab06-oidc-smoke-test
-          path: labs/lab-06-entra-id-detection-engineering-gated-content-pipeline/artifacts/oidc-smoke-test-resource-list.json
+          path: labs/06-entra-id-detection-engineering-gated-content-pipeline/artifacts/oidc-smoke-test-resource-list.json

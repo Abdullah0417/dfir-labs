@@ -7,13 +7,13 @@ on:
       - '.github/workflows/validate-lab06-content.yml'
       - '.github/workflows/package-lab06-content.yml'
       - '.github/workflows/lab06-oidc-smoke-test.yml'
-      - 'labs/lab-06-entra-id-detection-engineering-gated-content-pipeline/**'
+      - 'labs/06-entra-id-detection-engineering-gated-content-pipeline/**'
 
 jobs:
   validate:
     runs-on: ubuntu-latest
     env:
-      LAB06_DIR: labs/lab-06-entra-id-detection-engineering-gated-content-pipeline
+      LAB06_DIR: labs/06-entra-id-detection-engineering-gated-content-pipeline
     steps:
       - name: Checkout
         uses: actions/checkout@v4

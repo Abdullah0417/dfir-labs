@@ -1,5 +1,0 @@
-SigninLogs
-| where TimeGenerated >= ago(24h)
-| where ResultType != 0
-| summarize FailureCount=count(), DistinctUsers=dcount(UserPrincipalName), FirstSeen=min(TimeGenerated), LastSeen=max(TimeGenerated) by IPAddress
-| order by FailureCount desc

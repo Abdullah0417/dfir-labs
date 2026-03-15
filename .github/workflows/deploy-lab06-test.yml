@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: sentinel-test
     env:
-      LAB06_DIR: labs/lab-06-entra-id-detection-engineering-gated-content-pipeline
+      LAB06_DIR: labs/06-entra-id-detection-engineering-gated-content-pipeline
       AZURE_RG_TEST: ${{ vars.AZURE_RG_TEST }}
       AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
       SENTINEL_WORKSPACE_NAME_TEST: ${{ vars.SENTINEL_WORKSPACE_NAME_TEST }}
@@ -124,7 +124,7 @@ jobs:
         with:
           name: lab06-deploy-artifacts
           path: |
-            labs/lab-06-entra-id-detection-engineering-gated-content-pipeline/artifacts/whatif.json
-            labs/lab-06-entra-id-detection-engineering-gated-content-pipeline/artifacts/whatif-evaluation.json
-            labs/lab-06-entra-id-detection-engineering-gated-content-pipeline/artifacts/deployment-result.json
-            labs/lab-06-entra-id-detection-engineering-gated-content-pipeline/artifacts/post-deploy-inventory.txt
+            labs/06-entra-id-detection-engineering-gated-content-pipeline/artifacts/whatif.json
+            labs/06-entra-id-detection-engineering-gated-content-pipeline/artifacts/whatif-evaluation.json
+            labs/06-entra-id-detection-engineering-gated-content-pipeline/artifacts/deployment-result.json
+            labs/06-entra-id-detection-engineering-gated-content-pipeline/artifacts/post-deploy-inventory.txt

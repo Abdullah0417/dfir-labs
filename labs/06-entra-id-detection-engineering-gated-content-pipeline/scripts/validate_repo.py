@@ -66,7 +66,7 @@ def main() -> int:
     root_text = load_text(root_gitignore)
     lab_text = load_text(lab_gitignore)
 
-    root_ok = "labs/lab-06-entra-id-detection-engineering-gated-content-pipeline/notes/lab06-values.env" in root_text
+    root_ok = "labs/06-entra-id-detection-engineering-gated-content-pipeline/notes/lab06-values.env" in root_text
     lab_ok = ignore_target in lab_text or "/notes/lab06-values.env" in lab_text
 
     if not (root_ok or lab_ok):
