@@ -1,4 +1,4 @@
-# Detection tuning notes — LAB04
+# Detection tuning notes
 
 ## Detection intent
 Detect **PowerShell** executing a script from a user-writable AppData path consistent with low-effort persistence.
