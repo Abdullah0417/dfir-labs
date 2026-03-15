@@ -1,4 +1,4 @@
-# Automation — LAB02 SOAR-lite
+# Automation — SOAR
 
 ## Trigger
 - When an incident is **created**
