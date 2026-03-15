@@ -1,4 +1,4 @@
-# LAB 02 — Executive Summary (Incident Reconstruction)
+# Executive Summary (Incident Reconstruction)
 
 ## What happened
 Two Windows hosts (`win-ws1`, `win-ws2`) generated endpoint telemetry into Microsoft Sentinel via AMA + DCR. Ingestion health was validated with `Heartbeat`, and Windows Event Logs were queried from the `Event` table.
