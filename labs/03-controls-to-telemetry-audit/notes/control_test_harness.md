@@ -1,4 +1,4 @@
-# Lab 03 Control Test Harness (benign)
+# Control Test Harness (benign)
 
 Purpose: Generate known audit events so Sentinel validation queries can PASS/FAIL deterministically.
 
