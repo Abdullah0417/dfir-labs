@@ -1,4 +1,4 @@
-﻿# Lab 03 — Workbook KQL (Telemetry Coverage Dashboard)
+﻿# Workbook KQL (Telemetry Coverage Dashboard)
 
 This folder contains the KQL used by the **LAB03 — Telemetry Coverage Dashboard** workbook in Microsoft Sentinel (Azure portal).
 
