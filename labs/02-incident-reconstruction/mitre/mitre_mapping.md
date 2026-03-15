@@ -1,4 +1,4 @@
-# MITRE ATT&CK Mapping — Lab 02
+# MITRE ATT&CK Mapping
 
 | Tactic | Technique | Sub-technique | Why it applies | Primary telemetry | Evidence |
 |---|---|---|---|---|---|
