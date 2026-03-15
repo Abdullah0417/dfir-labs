@@ -1,4 +1,4 @@
-# Lab 06 scenario execution log
+# scenario execution log
 
 This file records the UTC windows used for each scenario, along with the specific validation notes that mattered during hunting and rule testing. It serves as the public source of truth for the hunt windows and screenshot timing.
 
