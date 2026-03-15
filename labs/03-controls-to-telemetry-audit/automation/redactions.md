@@ -1,4 +1,4 @@
-## Lab 03 — Automation rule export redactions
+## Automation rule export redactions
 
 Artifact:
 - `automation/LAB03_soar_lite_automation_rule.arm.json`
