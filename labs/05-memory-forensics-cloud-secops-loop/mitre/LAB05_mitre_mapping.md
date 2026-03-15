@@ -1,4 +1,4 @@
-# MITRE ATT&CK mapping (Lab 05)
+# MITRE ATT&CK mapping
 
 This lab intentionally keeps mapping **tight**: only techniques directly supported by evidence artifacts are claimed.
 
