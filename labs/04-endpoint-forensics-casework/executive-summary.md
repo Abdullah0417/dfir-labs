@@ -1,4 +1,4 @@
-﻿# Executive Summary — Lab 04 (Endpoint Forensics Casework)
+﻿# Executive Summary — (Endpoint Forensics Casework)
 
 ## What happened (high confidence)
 - A PowerShell script was dropped into %APPDATA%\AdobeUpdate\adobeupdate.ps1 and executed on win-ws1.
