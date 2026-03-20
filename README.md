@@ -12,16 +12,16 @@ Hands-on DFIR, detection engineering, identity-focused detection, and cloud SecO
 - Publish-safe, recruiter-reviewable lab documentation with reusable technical artifacts
 
 ## Start here
-- [Lab 06 — Entra ID Detection Engineering + Gated Content Pipeline](labs/06-entra-id-detection-engineering-gated-content-pipeline/)  
+- [06 — Entra ID Detection Engineering + Gated Content Pipeline](labs/06-entra-id-detection-engineering-gated-content-pipeline/)  
   Identity-focused detection engineering in Sentinel with GitHub OIDC validation, packaging, approval gates, and controlled test deployment.
 
-- [Lab 07 — AWS GuardDuty Detection + Response](labs/07-aws-guardduty-detection-response/)  
+- [07 — AWS GuardDuty Detection + Response](labs/07-aws-guardduty-detection-response/)  
   AWS-native alerting, finding retention, Athena triage, Security Hub pivots, and a separate response workflow.
 
-- [Lab 04 — Endpoint Forensics Casework](labs/04-endpoint-forensics-casework/)  
+- [04 — Endpoint Forensics Casework](labs/04-endpoint-forensics-casework/)  
   Endpoint artifact triage, timeline building, IOC packaging, and Sentinel uplift from forensic findings.
 
-- [Lab 05 — Windows Memory Forensics + Cloud SecOps Loop](labs/05-memory-forensics-cloud-secops-loop/)  
+- [05 — Windows Memory Forensics + Cloud SecOps Loop](labs/05-memory-forensics-cloud-secops-loop/)  
   Memory triage under cloud constraints, documented pivots, and hunt-to-response completion in Sentinel.
 
 ## Featured labs
