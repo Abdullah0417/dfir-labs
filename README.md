@@ -39,7 +39,7 @@ Hands-on DFIR, detection engineering, identity-focused detection, and cloud SecO
 | [02 — Multi-Host Incident Reconstruction](labs/02-incident-reconstruction/) | Correlate cross-host activity into a timeline and operationalize the result as detection, automation, and workbook content | ✅ Done |
 | [03 — Controls-to-Telemetry Audit](labs/03-controls-to-telemetry-audit/) | Test which security controls are observable and document gaps with validation queries and a coverage matrix | ✅ Done |
 
-## Planned / next
+## Planned
 | Lab | Focus | Status |
 |---|---|---|
 | 08 — Secure EKS AI Platform | Planned flagship lab for GitHub OIDC deployment, EKS Pod Identity, signed-image enforcement, platform hardening, runtime detection, AI abuse telemetry, and Security Hub response | 📋 Planned |
